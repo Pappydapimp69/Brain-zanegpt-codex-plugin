@@ -1,0 +1,33 @@
+{
+  "counts": {
+    "exploration": 21,
+    "ideas": 1061,
+    "memory": 1529,
+    "tension": 63
+  },
+  "notes": "Public curated canon only; no credentials, private stores, raw conversations, incoming proposals, or sandboxes.",
+  "sha256": "eb4d77e628ad7d5f5556860bf41f9eb61dfd16252dc650bec55816c0df76a9e5",
+  "snapshot_version": "2026.10.04.1",
+  "sources": {
+    "brain": {
+      "commit": "35bb478ae8f168ef0219a37586f728d2ed17a327",
+      "url": "https://github.com/Pappydapimp69/Brain"
+    },
+    "ideas": {
+      "commit": "52fded3d1eebc92c05c1c36a22ffe2d6fb3a1803",
+      "url": "https://github.com/Pappydapimp69/ideas"
+    },
+    "memory": {
+      "commit": "9147b20aef90013eff9840bae49f64a630d3cbd6",
+      "url": "https://github.com/Pappydapimp69/memory"
+    },
+    "tension": {
+      "commit": "6bfe0641b422b006002a9386a0c06082fa753cb1",
+      "url": "https://github.com/Pappydapimp69/Tension"
+    },
+    "zanegpt": {
+      "commit": "b2b2fed89602f6b28f95754a2d95e07644b0f6be",
+      "url": "https://github.com/Pappydapimp69/Zanegpt"
+    }
+  }
+}

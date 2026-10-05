@@ -1,0 +1,36 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "brain-zanegpt",
+  "version": "1.0.0",
+  "description": "ZaneGPT reasoning backed by an offline Brain knowledge snapshot and persistent local mining.",
+  "author": {
+    "name": "Pappydapimp69"
+  },
+  "homepage": "https://github.com/Pappydapimp69/Brain",
+  "keywords": [
+    "brain",
+    "zanegpt",
+    "knowledge",
+    "reasoning",
+    "mining"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Brain ZaneGPT",
+        "shortDescription": "ZaneGPT reasoning with offline Brain memory",
+        "longDescription": "Use ZaneGPT's complete reasoning and voice instructions while querying a versioned, read-only Brain snapshot and mining durable local lessons. Local knowledge stays outside the plugin and survives upgrades.",
+        "developerName": "Pappydapimp69",
+        "category": "Productivity",
+        "capabilities": ["Read", "Write"],
+        "websiteURL": "https://github.com/Pappydapimp69/Brain",
+        "defaultPrompt": [
+          "Ask Brain what it knows about this problem, then answer as ZaneGPT.",
+          "Mine the reusable lessons from this project into my local Brain store.",
+          "Pressure-test a gastrointestinal diagnosis while separating evidence from interpretation."
+        ],
+        "brandColor": "#5B3FD6"
+      }
+    }
+  }
+}
