@@ -13,7 +13,7 @@ Restart Codex or start a new session after installation. Verify the install:
 
 ```powershell
 codex plugin list --json
-python "$env:USERPROFILE\.codex\plugins\cache\brain-zanegpt-repository\brain-zanegpt\1.0.0\scripts\brain.py" status
+python "$env:USERPROFILE\.codex\plugins\cache\brain-zanegpt-repository\brain-zanegpt\1.1.0\scripts\brain.py" status
 ```
 
 If the cache root differs, use the `installedPath` printed by `codex plugin add` and append `scripts\brain.py`.

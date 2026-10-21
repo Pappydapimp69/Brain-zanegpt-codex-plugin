@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "brain-zanegpt",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "ZaneGPT reasoning backed by an offline Brain knowledge snapshot and persistent local mining.",
   "author": {
     "name": "Pappydapimp69"

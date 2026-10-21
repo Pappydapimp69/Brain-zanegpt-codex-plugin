@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 PLUGIN_ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT_PATH = PLUGIN_ROOT / "snapshot" / "brain.snapshot.json"
 REQUIRED = (

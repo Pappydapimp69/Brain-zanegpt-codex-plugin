@@ -1,28 +1,28 @@
 {
   "counts": {
-    "exploration": 21,
-    "ideas": 1061,
-    "memory": 1529,
-    "tension": 63
+    "exploration": 22,
+    "ideas": 1244,
+    "memory": 2514,
+    "tension": 144
   },
   "notes": "Public curated canon only; no credentials, private stores, raw conversations, incoming proposals, or sandboxes.",
-  "sha256": "eb4d77e628ad7d5f5556860bf41f9eb61dfd16252dc650bec55816c0df76a9e5",
-  "snapshot_version": "2026.10.04.1",
+  "sha256": "e34807e3c55904471d099dfc5c606312bef55eab8b22098b2b616beaae8faec9",
+  "snapshot_version": "2026.10.21.1",
   "sources": {
     "brain": {
-      "commit": "35bb478ae8f168ef0219a37586f728d2ed17a327",
+      "commit": "af6681ca3e53676f1ccc2b409a99975403b8e4d2",
       "url": "https://github.com/Pappydapimp69/Brain"
     },
     "ideas": {
-      "commit": "52fded3d1eebc92c05c1c36a22ffe2d6fb3a1803",
+      "commit": "db07d8e94b3d6d75dd4f4771bbcb7d79e01ebd24",
       "url": "https://github.com/Pappydapimp69/ideas"
     },
     "memory": {
-      "commit": "9147b20aef90013eff9840bae49f64a630d3cbd6",
+      "commit": "89d406ad4821a5c211cf35f5e00f10fbc6ae0a65",
       "url": "https://github.com/Pappydapimp69/memory"
     },
     "tension": {
-      "commit": "6bfe0641b422b006002a9386a0c06082fa753cb1",
+      "commit": "9b22dddc7d44aaf677c06f3be58b1ddccbd1b362",
       "url": "https://github.com/Pappydapimp69/Tension"
     },
     "zanegpt": {

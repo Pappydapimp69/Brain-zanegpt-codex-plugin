@@ -129,7 +129,7 @@ def main() -> None:
                for name, (path, url) in UPSTREAM.items()}
     snapshot = {
         "schema_version": 1,
-        "snapshot_version": "2026.10.04.1",
+        "snapshot_version": "2026.10.21.1",
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "read_only": True,
         "privacy": {
