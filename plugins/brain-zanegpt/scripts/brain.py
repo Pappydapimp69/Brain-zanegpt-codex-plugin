@@ -308,11 +308,111 @@ def load_brain(root: Path, view: Path, argv: list[str]):
     return brain
 
 
+# Hits per section a verbose query prints. Brain's matcher is a substring test
+# (`ui` matches "build"), and a broad term used to put the whole canon into the
+# agent's context; verbose now prints the most relevant hits only.
+VERBOSE_TOP = {"memory": 12, "tension": 5, "ideas": 8, "exploration": 4,
+               "incoming": 6}
+
+
+def _term_patterns(terms: list[str]) -> list[tuple[re.Pattern, re.Pattern]]:
+    """(word-start, whole-word) pattern per term; hyphens, underscores, slashes
+    and spaces inside a term are interchangeable, as in Brain's own matcher."""
+    result = []
+    for term in terms:
+        words = [w for w in re.split(r"[\s_/-]+", term.lower()) if w]
+        if words:
+            body = r"[\s_/-]*".join(re.escape(w) for w in words)
+            result.append((re.compile(r"(?<![a-z0-9])" + body, re.I),
+                           re.compile(r"(?<![a-z0-9])" + body + r"(?:e?s)?(?![a-z0-9])", re.I)))
+    return result
+
+
+def _relevance(text: str, patterns: list[tuple[re.Pattern, re.Pattern]]) -> int:
+    """0 unless some term starts a word in the text. Ranks by how many terms
+    hit, then hits in the heading or tags, then exact words, then frequency."""
+    head = text.split("\n", 1)[0]
+    terms_hit = score = 0
+    for start, whole in patterns:
+        body_hits = len(start.findall(text))
+        if not body_hits:
+            continue
+        terms_hit += 1
+        score += 4 * min(len(start.findall(head)), 3) + 2 * min(len(whole.findall(text)), 5) \
+            + min(body_hits, 5)
+    return 100 * terms_hit + score if terms_hit else 0
+
+
+def _install_ranked_matcher(brain, root: Path, top: dict[str, int] | None):
+    """Swap Brain's `matches` for one that admits only the top-ranked hits per
+    section. Returns {terms: {section: (shown, total)}} filled as queries run."""
+    plain = brain.matches
+    report: dict[tuple[str, ...], dict[str, tuple[int, int]]] = {}
+    allowed: dict[tuple[str, ...], set[str]] = {}
+
+    def pools() -> dict[str, list[str]]:
+        canon = dict(brain._shared_canon())
+        local = str(root / "memory")
+        return {
+            "memory": canon["memory"], "tension": canon["tension"],
+            "ideas": canon["ideas"], "exploration": canon["exploration"],
+            "local memory": brain._memory_index(local),
+            "local tension": brain._blocks(_read(root / "tension" / "tension-ledger.md"), "### "),
+            "local ideas": brain._blocks(_read(root / "ideas" / "idea-repository.md"), "## ["),
+            "incoming": [body for _, body, _ in brain._incoming_proposals(brain.node("memory"))],
+        }
+
+    def admitted(terms: list[str]) -> set[str]:
+        key = tuple(terms)
+        if key not in allowed:
+            patterns = _term_patterns(terms)
+            keep: set[str] = set()
+            counts = {}
+            for section, rows in pools().items():
+                hits = [row for row in rows if plain(row, terms)]
+                ranked = sorted(((_relevance(row, patterns), i, row) for i, row in enumerate(hits)),
+                                key=lambda item: (-item[0], item[1]))
+                relevant = [row for score, _, row in ranked if score > 0]
+                # nothing starts a word: fall back to Brain's substring hits
+                chosen = relevant or [row for _, _, row in ranked]
+                limit = None if top is None else top.get(section.replace("local ", ""), 8)
+                chosen = chosen if limit is None else chosen[:limit]
+                keep.update(chosen)
+                counts[section] = (len(chosen), len(hits))
+            allowed[key] = keep
+            report[key] = counts
+        return allowed[key]
+
+    brain.matches = lambda block, terms: block in admitted(terms)
+    return report
+
+
+def _query_flags(argv: list[str]) -> tuple[list[str], dict[str, int] | None]:
+    """Strip --all / --top N from a query's argv; return (argv, caps)."""
+    top: dict[str, int] | None = dict(VERBOSE_TOP)
+    rest, i = [], 0
+    while i < len(argv):
+        arg = argv[i]
+        if arg == "--all":
+            top = None
+        elif arg == "--top" and i + 1 < len(argv) and argv[i + 1].isdigit():
+            top = {section: int(argv[i + 1]) for section in VERBOSE_TOP}
+            i += 1
+        else:
+            rest.append(arg)
+        i += 1
+    return rest, top
+
+
 def run_brain(argv: list[str]) -> int:
     root = ensure_store()
     view = build_view(root)
     saved_argv = sys.argv[:]
     command = argv[0]
+    ranked = None
+    if command == "query":
+        argv, top = _query_flags(argv)
+        ranked = "--verbose" in argv
     if command == "check" and not shutil.which("claude") and shutil.which("codex") \
             and "--answer" not in argv:
         files = [arg for arg in argv[1:] if not arg.startswith("--")]
@@ -331,17 +431,31 @@ def run_brain(argv: list[str]) -> int:
                     handle.close()
                     argv = [*argv, "--answer", handle.name]
     buffer = io.StringIO()
+    report: dict = {}
     try:
         brain = load_brain(root, view, argv)
+        if ranked:
+            report = _install_ranked_matcher(brain, root, top)
         with contextlib.redirect_stdout(buffer):
             code = brain.COMMANDS[command]()
     except SystemExit as stop:
         code = stop.code if isinstance(stop.code, int) else 1
     finally:
         sys.argv = saved_argv
-    output = _rewrite(buffer.getvalue(), root)
+    output = buffer.getvalue()
+    if command in ("mine", "train", "check"):
+        # these print instructions for the agent; retrieved canon is data and
+        # is never rewritten
+        output = _rewrite(output, root)
     if output:
         _print_safe(output.rstrip("\n"))
+    if report:
+        counts = list(report.values())[-1]
+        cut = [f"{section} {shown}/{total}" for section, (shown, total) in counts.items()
+               if shown < total]
+        if cut:
+            _print_safe(f"\n(most relevant hits only — {', '.join(cut)}. "
+                        "Narrow the query, or pass --top N / --all for more)")
     if command in ("train", "challenge", "check") and code == 0:
         _print_safe(f"\n(canon paths such as projects/… and sandboxes/… are under "
                     f"{(view / 'memory').as_posix()}/ — read-only; write only to "

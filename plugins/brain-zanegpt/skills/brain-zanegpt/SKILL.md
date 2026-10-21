@@ -17,7 +17,7 @@ python3 "<plugin-root>/scripts/brain.py" query <terms>
 py -3 "<plugin-root>/scripts/brain.py" query <terms>
 ```
 
-Use `--verbose` when the digest reports relevant results. Re-query for each new sub-problem. A zero-result query almost always means rephrase; retry with a broader keyword and read the `local:` bucket. Surface any open (🔴/🟡) tension a query reports before committing to that fork.
+Use `--verbose` when the digest reports relevant results; it prints only the most relevant hits per section and says how many it left out. Narrow the query before reaching for `--top N` or `--all`, which put more canon into context. Re-query for each new sub-problem. A zero-result query almost always means rephrase; retry with a broader keyword and read the `local:` bucket. Surface any open (🔴/🟡) tension a query reports before committing to that fork.
 
 Commands: `query`, `challenge`, `paths`, `mine`, `train`, `check`, `analyze`, `tension` and `scorecard` run Brain's own CLI; `status`, `sync`, `export` and `import` are the launcher's. Follow the AGENT INSTRUCTION blocks they print; their paths already point at the user's store.
 

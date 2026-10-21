@@ -28,7 +28,7 @@ Run `python scripts/brain.py status` to see the exact local data directory. Over
 
 ```text
 python scripts/brain.py status
-python scripts/brain.py query reachability [--verbose]
+python scripts/brain.py query reachability [--verbose [--top N | --all]]
 python scripts/brain.py challenge reachability
 python scripts/brain.py mine
 python scripts/brain.py sync
@@ -38,6 +38,8 @@ python scripts/brain.py paths | analyze | tension | scorecard
 python scripts/brain.py export --out brain-local-export.zip
 python scripts/brain.py import brain-local-export.zip
 ```
+
+`query --verbose` prints the most relevant hits per section (12 lessons, 8 ideas, 5 tensions, 4 explorations, 6 proposals by default), ranked by how many terms start a word in the hit, then heading and tag hits. `--top N` changes the cap; `--all` prints every hit.
 
 `import` restores an export exactly into an empty store. Into a store that already has lessons, it re-files each lesson through the steward; review lines then have to be earned again in that store.
 

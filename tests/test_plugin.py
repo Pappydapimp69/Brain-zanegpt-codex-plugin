@@ -122,6 +122,14 @@ def main() -> None:
         check(query.returncode == 0 and "query 'reachability'" in query.stdout
               and "memory" in query.stdout, query.stdout + query.stderr)
 
+        # a broad term is capped to the most relevant hits, not the whole canon
+        broad = run(PLUGIN, data, "query", "ui", "--verbose")
+        check(broad.returncode == 0 and len(broad.stdout) < 40000
+              and "most relevant hits only" in broad.stdout, f"{len(broad.stdout)} bytes")
+        every = run(PLUGIN, data, "query", "reachability", "--verbose", "--all")
+        check(every.returncode == 0 and "most relevant hits only" not in every.stdout
+              and "--all" not in every.stdout.split("\n", 1)[0], every.stdout[:300])
+
         mine = run(PLUGIN, data, "mine", cwd=tmp)
         check(mine.returncode == 0 and "AGENT INSTRUCTION" in mine.stdout
               and "PROPOSAL SCHEMA" in mine.stdout and str(incoming.as_posix()) in mine.stdout,
@@ -209,7 +217,7 @@ def main() -> None:
         check("## E999" in view and "testowner__demo-app__local.md#E1" in view, "overlay after upgrade")
 
     print("PASS: layout, steward gate, dedup hold, reviews, tiers, train, export/restore, "
-          "v1 migration, merge, upgrade persistence")
+          "v1 migration, merge, upgrade persistence, capped verbose")
 
 
 if __name__ == "__main__":
