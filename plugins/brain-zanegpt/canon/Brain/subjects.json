@@ -1,0 +1,372 @@
+{
+ "_comment": "Brain's subject tree: general categories, each with branches. Brain and every model are scored on this same tree, and a category rolls up its branches. A lesson is placed by its tags and a kernel by its domain (for the catch-all SYSTEM domain, by its second word), always lowercase. The first branch (categories top to bottom, branches in order) sharing a tag with `tags` wins; only if none does, a branch whose `fallback_tags` match; else 'Other'. Domain categories sit above Software engineering so a broad engineering tag cannot steal a specific lesson. Edit freely; the scorecard reads it live. Branches are subjects, never lesson names.",
+ "categories": [
+  {
+   "name": "Business & money",
+   "branches": [
+    {
+     "name": "E-commerce & marketing",
+     "tags": [
+      "tiktok-shop",
+      "tiktok",
+      "social-marketing",
+      "seo",
+      "monetization",
+      "unit-economics",
+      "gmv",
+      "ads",
+      "creator"
+     ]
+    },
+    {
+     "name": "Money & law",
+     "tags": [
+      "personal-finance",
+      "legal"
+     ]
+    },
+    {
+     "name": "Deals & persuasion",
+     "tags": [
+      "negotiation",
+      "persuasion",
+      "pitch",
+      "networking",
+      "submission"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Life & body",
+   "branches": [
+    {
+     "name": "Body & home",
+     "tags": [
+      "fitness",
+      "cooking",
+      "garden"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "People & mind",
+   "branches": [
+    {
+     "name": "Teaching & communication",
+     "tags": [
+      "teaching",
+      "public-speaking",
+      "presentation",
+      "conversation",
+      "coaching-loop"
+     ]
+    },
+    {
+     "name": "Decisions & feelings",
+     "tags": [
+      "decision-making",
+      "regret",
+      "empathy",
+      "zen",
+      "time-management",
+      "research"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Creative arts",
+   "branches": [
+    {
+     "name": "Music & audio",
+     "tags": [
+      "songwriting",
+      "lyrics",
+      "rhyme",
+      "suno-prompting",
+      "lyrical-composition",
+      "music",
+      "composition",
+      "audio",
+      "dsp",
+      "sound-design",
+      "sfx",
+      "foley"
+     ]
+    },
+    {
+     "name": "Visual art & motion",
+     "tags": [
+      "painting",
+      "art",
+      "motion",
+      "photography",
+      "cinematography",
+      "film",
+      "3d-modeling",
+      "rigging",
+      "shaders",
+      "vfx",
+      "viz",
+      "growth-visualization",
+      "rendering",
+      "animation",
+      "camera",
+      "cutscene",
+      "character-design",
+      "color",
+      "shape-language"
+     ]
+    },
+    {
+     "name": "Writing & storytelling",
+     "tags": [
+      "narrative-design",
+      "narrative",
+      "storytelling",
+      "oral-storytelling",
+      "oral-history",
+      "narration",
+      "writing",
+      "setup-payoff",
+      "causality",
+      "ai-narrative",
+      "interactive-narrative"
+     ]
+    },
+    {
+     "name": "Voice & speech",
+     "tags": [
+      "voice",
+      "speech-disfluency",
+      "disfluency",
+      "tts",
+      "ssml",
+      "elevenlabs"
+     ]
+    },
+    {
+     "name": "Ideation & originality",
+     "tags": [
+      "creativity",
+      "ideation",
+      "originality",
+      "brainstorm",
+      "premise",
+      "remix",
+      "novelty"
+     ]
+    },
+    {
+     "name": "Comedy & humor",
+     "tags": [
+      "comedy",
+      "humor",
+      "humor-styles",
+      "parody",
+      "satire",
+      "absurdism"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Games",
+   "branches": [
+    {
+     "name": "Game design & economy",
+     "tags": [
+      "gamedesign",
+      "game-design",
+      "balance",
+      "coop",
+      "content",
+      "rpg",
+      "economy",
+      "survival",
+      "speedrun",
+      "level-design",
+      "modding",
+      "couch-multiplayer",
+      "multiplayer",
+      "gamification",
+      "barter-economy",
+      "wager"
+     ]
+    },
+    {
+     "name": "Worlds & characters",
+     "tags": [
+      "npc-sim",
+      "worldbuilding",
+      "procgen",
+      "pathfinding",
+      "physics",
+      "character"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "AI & data",
+   "branches": [
+    {
+     "name": "Models & learning",
+     "tags": [
+      "ai",
+      "llm",
+      "embeddings",
+      "ml",
+      "machine-learning",
+      "reinforcement",
+      "multi-agent",
+      "ai-video"
+     ]
+    },
+    {
+     "name": "Prompting & agents",
+     "tags": [
+      "prompt-engineering",
+      "skills",
+      "orchestration",
+      "routing",
+      "capability",
+      "truthfulness",
+      "knowledge-capture"
+     ]
+    },
+    {
+     "name": "Search & data",
+     "tags": [
+      "search",
+      "data-toy",
+      "simulation",
+      "data",
+      "schema"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Software engineering",
+   "branches": [
+    {
+     "name": "Security",
+     "tags": [
+      "security",
+      "injection",
+      "privacy",
+      "cryptography"
+     ]
+    },
+    {
+     "name": "Interfaces & accessibility",
+     "tags": [
+      "browser",
+      "web",
+      "canvas",
+      "mobile",
+      "accessibility",
+      "layout",
+      "ux",
+      "ui-ux",
+      "ui-state",
+      "localization",
+      "typography",
+      "text",
+      "visualdesign",
+      "design",
+      "editor",
+      "prosemirror"
+     ]
+    },
+    {
+     "name": "Delivery & version control",
+     "tags": [
+      "ci",
+      "git",
+      "deployment",
+      "deploy",
+      "distribution",
+      "build",
+      "version-control"
+     ]
+    },
+    {
+     "name": "Performance & numerics",
+     "tags": [
+      "performance",
+      "algorithm",
+      "algo",
+      "determinism",
+      "correctness",
+      "floating-point",
+      "graph",
+      "stats",
+      "statistics",
+      "measurement",
+      "timing",
+      "timekeeping",
+      "realtime",
+      "numerics",
+      "sorting",
+      "hashing",
+      "compression",
+      "regex",
+      "sampling",
+      "geometry",
+      "geospatial"
+     ]
+    },
+    {
+     "name": "Architecture & APIs",
+     "tags": [
+      "architecture",
+      "structure",
+      "process",
+      "method",
+      "api-design",
+      "database-design",
+      "concurrency",
+      "serialization",
+      "documentation",
+      "governance",
+      "tooling",
+      "cli",
+      "robustness",
+      "resilience",
+      "retry",
+      "distributed",
+      "messaging",
+      "sync",
+      "storage",
+      "data-integrity",
+      "data-model",
+      "parsing",
+      "scheduling"
+     ]
+    },
+    {
+     "name": "Testing & debugging",
+     "tags": [
+      "verification",
+      "debugging",
+      "observability",
+      "harness",
+      "procgen-qa"
+     ],
+     "fallback_tags": [
+      "testing",
+      "state",
+      "gamedev",
+      "input",
+      "ui",
+      "save"
+     ]
+    }
+   ]
+  }
+ ]
+}

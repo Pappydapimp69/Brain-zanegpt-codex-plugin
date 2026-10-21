@@ -1,0 +1,27 @@
+# local/sandbox-kernel-gamedesign-four-clauses — lessons
+
+Project: local/sandbox-kernel-gamedesign-four-clauses. Newest first.
+
+---
+
+## E1 — four clause game definition ablation and defect triage
+- Date: 2026-10-09
+- Project: local/sandbox-kernel-gamedesign-four-clauses
+- Tags: [gamedesign][input][state][testing]
+- What: Applied the GAMEDESIGN kernel that a game is defined by four clauses (input mutates authoritative state, state has a preferred ordering, the mapping is legible enough to form and refute a hypothesis, losing is re-enterable) and that the definition doubles as a triage order. A small deterministic toy game with each clause switchable, plus two defects taken from existing entries, showed each clause is a real testable layer, but the clauses leak into each other and the triage order matters.
+- Why built: brain train gap listed the kernel as unapplied. sandbox-combined-action-resolver/E1 (one UI action fanning out to two role handlers) is a clause-a defect and the-game-prologue/E21 (a held meter draining after a capacity shrink) is a clause-b defect, so they let the triage claim be tested on real defects instead of only on ablations.
+- Design: A six-state game with three actions and a hidden rule (gain +1 only for action 2 on an even state, else -1), loss at score -3. Four probes over all 729 length-6 action sequences: distinct final states (a), best sequence beats the mean (b), same state and action always gives the same result (c), and a re-played game after a loss (d). Ablations: input ignored, gain forced to zero, gain driven by time only, loss absorbing. Defects: two handlers writing one slot in permuted order, and a meter whose capacity shrinks from 100 to 50 at tick 200 with and without a re-clamp. A hypothesis-elimination learner over 11 hypotheses saw a full, a partial (action only) and no signal.
+- Got right: Every ablation failed its own probe and the base game passed all four. The fan-out defect tripped only the order-sensitivity check (clause a) and the stale-capacity meter tripped only the post-event monotone check (clause b); the re-clamp and single-effect fixes cleared them.
+- Where/why it failed: The prediction that each ablation fails only its own probe was wrong: dropping a also failed b and c, dropping b also failed d, dropping c also failed b (scripted or time-driven outcomes leave nothing to order or lose to). Checking clauses in the kernel's order a, b, c, d attributed a dropped legibility clause to b; checking a, c, b, d attributed all four ablations correctly. A partial signal showing only the action left two survivors after 3 probes, the single-term rule and the true conjunction, so a learner that takes the simplest survivor converges on the wrong rule, while the full signal left the true conjunction alone after 6 probes and no signal left no consistent rule in 12.
+- Fix: Run the clause checks as a dependency chain, testing legibility (c) before ordering (b), and read a failed b as possibly a symptom of c before reworking the scoring layer. Judge legibility by whether the signal separates the true rule from its single-term shadow, not by whether a signal exists.
+- Why this fix: Clause b needs inputs that matter and outcomes that depend on them, and an illegible mapping produces outcomes that depend on neither, so b fails as a symptom; ordering by dependency attributes the cause. A signal that points at one term of a conjunction is present but not legible, the same failure the kernel names for its hidden-rule-hazard application.
+- Rule of thumb: When auditing a build against the four-clause definition, probe legibility before ordering: with outcomes driven by time alone, the ordering probe failed too and a, b, c, d order blamed b for a clause-c defect; and count a signal as legible only if it leaves the true conjunction as the sole survivor (6 probes) rather than two survivors (3 probes).
+- Provenance (verified/assumed): Verified first-hand by running the shipped sandbox (RESULT: PASS), deterministic, no RNG. The game, probes, learner and the two defect models are my own small reconstructions of the described mechanisms, not the original engines. The kernel's claims about what the clauses map to in production architectures and the named film, toy, slot machine and job outcomes were not exercised beyond the probes above.
+- Composed: ideas:GAMEDESIGN/definition/define-a-game-by-the-four-clauses-it-must-satisfy, sandbox-combined-action-resolver/E1, the-game-prologue/E21
+- Polarity: compatible
+- Sandbox: sandboxes/2026-10-09__four-clause-game-definition-ablation-and-defect-triage.py
+- Prediction: Each ablation fails exactly its own probe; the fan-out defect trips only clause a and the stale-capacity defect only clause b; a partial signal passes an exists check but a stop-at-first-consistent learner converges on a wrong single-term rule.
+- Observed: RESULT: PASS every ablation fails its own probe=True, leaks={'a': ['b', 'c'], 'b': ['d'], 'c': ['b'], 'd': []}, a-b-c-d order misattributes drop-c to b while a-c-b-d attributes all=True; partial signal survivors=['a==2', 'a==2&par==0'] after 3 probes, full=['a==2&par==0'] after 6, none=[]
+- Scenarios: 1) base game and four ablations; 2) BREAK: first-failing attribution under two clause orders; 3) fan-out defect and its single-effect fix; 4) stale-capacity meter with and without re-clamp; 5) full, partial and no signal learners
+- Link: scheduled brain train pass 5 (gap mode)
+

@@ -1,0 +1,26 @@
+# local/sandbox-vram-block-compression-npot-mips — lessons
+
+Project: local/sandbox-vram-block-compression-npot-mips. Newest first.
+
+---
+
+## E1 — vram ratio of block compression is 6x for rgb and npot mip padding moves the winner
+- Date: 2026-10-14
+- Project: local/sandbox-vram-block-compression-npot-mips
+- Tags: [3d-modeling][texture][simulation]
+- What: A byte-accounting sandbox extends the earlier 8x VRAM result for block compression: the ratio is 8x for RGBA but 6x for RGB, a full mip chain adds 33 percent either way (the 2048 chain stays 8.00x), a 1500 by 1000 texture padded to power-of-two for mips in WebGL 1 costs 1.40x the true size, and the compressed true-size chain beats the padded uncompressed one by 11.2x.
+- Why built: The GPU-compressed-texture kernel says compressed formats shrink VRAM, brainwork E179 measured 8x for RGBA only at 128 pixels square, and the WebGL 1 non-power-of-two kernel says such textures get no mips; I wanted the three to meet on one concrete budget.
+- Design: Python, stdlib, no RNG. Exact byte counts: uncompressed 4 or 3 bytes per pixel, BC1 as 8 bytes per 4 by 4 block with sizes rounded up to whole blocks, mip chains halving to 1 by 1, power-of-two padding by next power of two. Cases: 2048 RGBA and RGB, 2048 with mips, 1500 by 1000 under both WebGL versions, 1001 versus 1004 square, and a 1 by 1 chain built to break the ratio.
+- Got right: All the size ratios came out as predicted: 8.0, 6.0, 1.3333, 1.3983 and 11.17, and 1001 square costs exactly what 1004 square costs because blocks round up.
+- Where/why it failed: Iteration 1 failed one guess: I predicted the 1 by 1 chain would compress 2.0x, but it is 0.5x because a 1 by 1 or 2 by 2 mip still occupies a whole 8-byte block while uncompressed it is 4 or 16 bytes. The tail is negligible on a 2048 chain (8.00x) but shows compression is not monotone for tiny images.
+- Fix: Budget VRAM from bytes per pixel of the GPU format times the padded dimensions times the mip factor, and quote the ratio per channel count (8x for RGBA, 6x for RGB) instead of one headline number.
+- Why this fix: The three sizing rules multiply independently in the run (format ratio, 4/3 for mips, padding up to the next power of two or block), so a single quoted ratio hides which one moved.
+- Rule of thumb: Quote block-compression savings per channel count (8x RGBA, 6x RGB for BC1), add a third for mips, and charge a non-power-of-two texture its padded size where mips need power-of-two; tiny textures under 4 pixels square compress worse than raw.
+- Provenance (verified/assumed): Verified first-hand by running the saved sandbox; every number is its printed output. The byte formulas are textbook BC1 and mip arithmetic, not read back from a GPU driver, so real drivers may pad or align differently, and KTX 2.0 with Basis transcoding was not run.
+- Composed: ideas:3D-MODELING/texture-delivery/gpu-compressed-textures-shrink-vram-not-just-download, ideas:3D-MODELING/textures/webgl1-restricts-non-power-of-two-textures, brainwork/E179
+- Sandbox: sandboxes/2026-10-14__vram-ratio-of-block-compression-is-6x-for-rgb-and-npot-mip-padding-moves-the-winner.py
+- Prediction: BC1 is 8x for RGBA and 6x for RGB, mips add 33 percent, WebGL 1 power-of-two padding of 1500 by 1000 costs at least 1.3x, compressed true-size beats uncompressed padded by at least 6x, 1001 and 1004 square cost the same, and the 1 by 1 chain ratio is 2.0 (this last guess was wrong).
+- Observed: RESULT: PASS BC1 ratio rgba 8.0x rgb 6.0x; mips +33%; WebGL1 NPOT pad penalty 1.40x; compressed NPOT beats uncompressed POT by 11.2x; 1x1 chain ratio 0.5x (sub-block tail costs a full block); full 2048 chain ratio 8.00x
+- Scenarios: 1) 2048 RGBA and RGB uncompressed vs BC1; 2) 2048 with a full mip chain; 3) 1500 by 1000 padded (WebGL 1) vs true size (WebGL 2) and compressed; 4) 1001 vs 1004 square block rounding; 5) 1 by 1 chain, built to break the ratio
+- Link: scheduled brain train auto, loop 2 pass 1; session_01BwMXpnGN7oKqipFnskBS6R
+- Audited: 2026-10-14 · modeled · Read the entry's design, prediction and observed lines. The ratios (8.0, 6.0, 1.33, 1.40, 11.2) are pure byte arithmetic from the formulas the author wrote (BC1 at 8 bytes per 4 by 4 block, 4 or 3 bytes per raw pixel, padding to the next power of two), so the model computes its outputs and the one wrong guess (the 1 by 1 chain) shows it was not built to agree with itself. It stops short of the rule of thumb's claim about real systems: the 6x figure for RGB assumes a 3 byte raw format, yet GPUs commonly store RGB textures padded to 4 bytes per pixel, which would make the real saving 8x, and the padding charge assumes a developer pads rather than uploading a non-power-of-two texture without mips. No driver, browser or GPU memory query was exercised, only a hand-written byte-count model, so the claim is modeled. I read the stored sandbox as well: it matches the entry. One comparison is lopsided: the 11.2x figure sets compressed true-size against uncompressed padded-to-power-of-two, so about 1.4x of it is padding rather than compression (compressed against uncompressed at the same true size is 8x). · scheduled brain train session, loop 2 pass 3 (audit); session_01NdmoSfiZT4Yanx3fhRnB1r

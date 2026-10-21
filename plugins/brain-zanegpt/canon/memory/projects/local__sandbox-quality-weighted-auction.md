@@ -1,0 +1,27 @@
+# local/sandbox-quality-weighted-auction — lessons
+
+Project: local/sandbox-quality-weighted-auction. Newest first.
+
+---
+
+## E1 — quality weighted second price auction lets a lower bid win and pay less until the threshold bites
+- Date: 2026-10-14
+- Project: local/sandbox-quality-weighted-auction
+- Tags: [marketing][simulation][method]
+- What: A deterministic model of a quality-weighted second-price auction (rank is bid times quality, price is the next rank divided by own quality plus one cent) reproduced the kernel's two claims: a bid of 1.00 at quality 2.5 beat a bid of 2.00 at quality 1.0 and paid 0.81, and raising that quality to 5 cut the price to 0.41. The price stayed at or below the winner's own bid in 25 of 25 grid cells.
+- Why built: The ad-auction kernel states that quality can beat a higher bid and lower the price, but it also says the exact price formula was not confirmed on a live page, so I wanted to see which parts survive under any plausible quality-weighted second-price rule and where they stop.
+- Design: Python, stdlib, no RNG. A rank floor of 1.0 drops ads below the threshold; the price is computed without capping it at the bid (an earlier draft capped it, which made the price-below-bid check true by construction, and I removed that). Scenarios: low bid high quality against high bid, quality doubling, a 5 by 5 grid of bids and qualities against a fixed rival, a bid of 10 at quality 0.05 under the floor, and equal quality as the break case.
+- Got right: Price falls in proportion to the winner's own quality (0.81 to 0.41 when quality doubled) and never exceeded the winner's bid in the grid; the floor stops a large bid from rescuing a low-quality ad.
+- Where/why it failed: Nothing in the model failed, which is itself a limit: the model assumes the platform's formula is rank equals bid times quality and the price rule is the next rank over own quality, both my assumptions, since the kernel says the real formula was not verified. At equal quality the model collapses to plain second price (winner bid 3.0 paid 2.01), so quality helps only through the ratio of qualities against the ratio of bids.
+- Fix: When budgeting, treat quality as a divisor on price: spend on relevance until the marginal cost per click falls more than the improvement costs, and check the floor first because below it no bid works.
+- Why this fix: In the run price scales with next rank over own quality, so quality is a multiplier on every bid, and the floor is the only place where the bid becomes irrelevant.
+- Rule of thumb: In a quality-weighted second-price auction a lower bid with a quality advantage wins and pays less (1.00 at quality 2.5 paid 0.81 against a 2.00 bid), quality doubling halves the price, and a rank floor makes bids irrelevant under it; none of this holds at equal quality, and the real platform formula is not checked here.
+- Provenance (verified/assumed): Verified first-hand by running the saved sandbox; every number is its printed output. The auction formula is my own generalized second price assumption, not Google's published rule, and I did not check any live platform; this cites only the one kernel because no other kernel or memory entry was exercised.
+- Composed: ideas:SOCIAL-MARKETING/advertising/auction-mechanics/ad-auctions-reward-quality-not-just-the-highest-bid
+- Sandbox: sandboxes/2026-10-14__quality-weighted-second-price-auction-lets-a-lower-bid-win-and-pay-less-until-the-threshold-bites.py
+- Prediction: Bid 1.00 at quality 2.5 beats bid 2.00 and pays 0.81; quality 5 cuts the price to at most 60 percent of that; price stays at or below the winner's bid in all 25 cells; bid 10 at quality 0.05 loses to a bid of 0.5 at quality 2.2; equal quality is plain second price.
+- Observed: RESULT: PASS low bid 1.00 w/ QS2.5 beats bid 2.00 and pays 0.81; QS 5 pays 0.41; price<=bid in 25/25 cells; bid 10 at QS 0.05 loses to the floor; equal-QS is plain second price (2.01)
+- Scenarios: 1) low bid high quality against high bid; 2) quality doubling at fixed bids; 3) 5 by 5 bid and quality grid; 4) bid under the quality floor; 5) equal quality, built to break the quality advantage
+- Link: scheduled brain train auto, loop 2 pass 5; session_01BwMXpnGN7oKqipFnskBS6R
+- Audited: 2026-10-14 · modeled · Read the entry and its stored sandbox. The model computes its outcomes from a hand-written rule (rank = bid x quality, price = next rank / own quality + 0.01), so the printed numbers (0.81, 0.41, 2.01) follow from that formula and are not independent evidence. The price-at-or-below-bid check is true by construction, since the next rank can never exceed the winner's own rank, and the 0.0101 tolerance hides the one cent addition. The rule of thumb's claim that quality doubling halves the price is covered by one pair of runs and the floor claim by a single case. The real platform rule was never exercised, which the entry itself admits, so the claim about ad auctions is tested only against a model of the author's own making. · scheduled brain train session, loop 1 pass 3 (audit); session_01NdmoSfiZT4Yanx3fhRnB1r
+- Cited-by: 2026-10-14 · projects/pappydapimp69__brainwork.md#E269 · compatible · sandboxes/2026-10-14__creative-fatigue-erodes-auction-quality-so-rotation-protects-rank-and-price.py · observed RESULT: FAIL decay0.85 clicks single/2xbid/rotate6=121/149/726 weeks=2/3/12; decay0.99 clicks spread=13.5% (held 4/5). The one miss was the 10% bound at decay 0.99. · brain train auto loop 2 pass 2, session_01CwpncTDkwf6YoSaQyXUsNe

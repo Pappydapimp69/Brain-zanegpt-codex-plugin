@@ -1,0 +1,24 @@
+# local/sandbox-one-stray-merge-flips-open-verdicts — lessons
+
+Project: local/sandbox-one-stray-merge-flips-open-verdicts. Newest first.
+
+---
+
+## E1 — sandbox one stray merge flips open verdicts
+- Date: 2026-09-30
+- Project: local/sandbox-one-stray-merge-flips-open-verdicts
+- Tags: [songwriting][rhyme][testing]
+- What: Exhaustive check over all 15 valid 4-line rhyme schemes and all 19 single-step collapses (an unrhymed line joining a group, or two groups merging, as a stray assonance match does in one-pass lettering). One collapse flips the open-or-stable verdict in 7 of 19 cases, including the two-pass kernel's own example XXAA to XAAA (open to stable) and ABBA to AAAA. Max closure distance changes in only 10 of 19 and stays at 1 for XXAA to XAAA.
+- Why built: The two-pass kernel says a single stray assonance pair collapses a scheme, and E8 plus my earlier XXAA entry give metrics for openness; this measures how much damage one collapse does to those metrics' verdicts and which metric notices it.
+- Design: sb/music/t8_collapse_metrics.py enumerates schemes over X, A-D in canonical form with every letter used at least twice, applies every single collapse, and compares max closure distance, first closing line, unrhymed-line count, and the two-metric open verdict (max distance 3 or more, or nothing closes before the last line).
+- Got right: Unrhymed-line count changes in 16 of 19 collapses, first closing line in 12, max closure in 10, so a drop in unrhymed lines is the most sensitive sign that a collapse happened.
+- Where/why it failed: AABB to AAAA changes none of the four measurements, so some collapses cannot be seen from the letters at all. And max closure alone misses the kernel's headline case, because XAAA closes at distance 1 just as XXAA does.
+- Fix: Get the lettering right before judging shape (two-pass, resolved rhymes first), and when comparing drafts, watch for a drop in unrhymed lines as the cheap alarm that an assonance merge has happened.
+- Why this fix: Shape verdicts are downstream of lettering, and a third of single errors flip them, so no shape metric can compensate for a lettering bug.
+- Rule of thumb: One stray assonance merge flips the open/stable verdict in 7 of 19 single collapses (XXAA to XAAA, ABBA to AAAA), so fix lettering before trusting any scheme-shape metric, and watch the unrhymed-line count.
+- Provenance (verified/assumed): Verified first-hand by running sb/music/t8_collapse_metrics.py; all counts are exhaustive over the enumerated schemes. The open verdict rule is from my earlier XXAA entry, not an established standard.
+- Composed: ideas:SONGWRITING/rhyme-tooling/two-pass-letter-assignment-keeps-schemes-legible, sandbox-lyrical-composition/E8, sandbox-closure-distance-calls-xxaa-closed/E1
+- Link: scheduled training session, music batch
+- Reverified: 2026-09-30 · pass · sandboxes/2026-09-30__rebuild-single-merge-flips-scheme-verdict.py · observed RESULT: PASS 12 of 31 distinct single collapses flip the verdict; closure distance changes in 17; XXAA->XAAA open->stable, ABBA->AAAA open->stable · Own setup: enumeration of every two-block merge over all 15 set partitions of 4 lines, deduplicated to 31 distinct before-and-after pairs, and my own open/stable rule (stable if at most one unrhymed line and every rhyme group is contiguous); the original enumerated 19 collapses and used max distance 3 or more, or nothing closing before the last line, as open (read only after the run). A single merge flipped the verdict in 12 of 31 collapses (39 percent, against the original's 7 of 19, 37 percent), including both named cases XXAA to XAAA and ABBA to AAAA flipping open to stable, while closure distance stayed at 1 for XXAA to XAAA. My verdict rule differs from the original's, so the exact counts are not comparable, but the claim that one stray merge often flips the verdict reproduced under an independent definition. My rule was written knowing the named examples, which is a weakness of this rebuild. · https://claude.ai/code/session_01PXuEX9SfJcr8Mxg6sK6stu
+- Cited-by: 2026-09-30 · projects/local__sandbox-spelling-eye-rhymes-act-as-stray-merges.md#E1 · compatible · sandboxes/2026-09-30__spelling-eye-rhymes-act-as-stray-merges.py · observed RESULT: PASS spelling judge letters 5/6 stanzas differently and flips the open/stable verdict in 1/6; control stanza agrees=True · https://claude.ai/code/session_01PXuEX9SfJcr8Mxg6sK6stu
+- Cited-by: 2026-10-15 · projects/pappydapimp69__brain-auto-training.md#E16 · compatible · sandboxes/2026-10-15__stray-assonance-corpus-flips-run-both-ways-xaax-reads-as-wistful-abba.py · observed RESULT: PASS S1 one-pass flips 46080/104976 (43.9%: 44352 open->stable, 1728 stable->open); case-blind two-pass flips 35424 (2016 stable->open); S2 5-vowel one-pass 29.6%; XAAX->ABBA fixed case flips stable->open=True. Not predicted: case-… · https://claude.ai/code/session_01E8b6CeJT8Lb9myTqhRx1qr auto training loop 3 pass 1

@@ -1,0 +1,25 @@
+# local/sandbox-stutter-hooks-break-a-token-title-matcher — lessons
+
+Project: local/sandbox-stutter-hooks-break-a-token-title-matcher. Newest first.
+
+---
+
+## E1 — sandbox stutter hooks break a token title matcher
+- Date: 2026-09-30
+- Project: local/sandbox-stutter-hooks-break-a-token-title-matcher
+- Tags: [songwriting][lyrics][testing]
+- What: The content-word subsequence title matcher recommended by lyrics-structure E3 does worse than plain substring matching on stutter hooks if its tokenizer keeps hyphens. On 8 title lines built from the hooks kernel's stutter and nonsense-syllable techniques, exact substring finds 7, the subsequence matcher with hyphens kept finds 3, and the same matcher with hyphens split finds all 8.
+- Why built: E3 was tested on function-word swaps and tense shifts, while the hooks kernel names stutter (a repeated first syllable joined by hyphens) as a core title technique; that input was never run through the recommended matcher.
+- Design: sb/music/t6_stutter_titledrop.py. Titles from the kernel's own examples (Undo It, Bennie and the Jets, Havana) plus Hold The Line and Wasted Time. Matchers: substring; content-word subsequence with a small stopword list and tokens that keep hyphens; the same with hyphens as separators; the same after collapsing stutter prefixes.
+- Got right: Splitting on hyphens alone recovers all 8, including the E3-style variant hold that line, which substring misses. Collapsing stutters added nothing beyond splitting on this fixture.
+- Where/why it failed: A hyphen-kept tokenizer reads uh-uh-uh-uh-undo or ho-ho-hold as a single token that is not the title word, so every stutter line fails. Substring passes them only because the full title still appears at the end of the stutter.
+- Fix: Tokenize on hyphens (and apostrophe-free punctuation) before the content-word subsequence match, and add stutter and nonsense-syllable lines to the title-drop fixture.
+- Why this fix: The stutter is written with hyphens by convention, so the tokenizer, not the matching rule, decides whether the technique is seen.
+- Rule of thumb: Before swapping a substring title check for a token matcher, run stutter hooks through it: with hyphens kept as word characters it drops from 7 of 8 to 3 of 8; split on hyphens and it finds all 8.
+- Provenance (verified/assumed): Verified first-hand by running sb/music/t6_stutter_titledrop.py; hit counts are observed output. E3 does not state its tokenizer, so this is a risk in the recommended design, not a claim about E3's own script.
+- Composed: sandbox-lyrics-structure/E3, ideas:SONGWRITING/hooks/five-named-techniques-for-a-memorable-melodic-hook
+- Link: scheduled training session, music batch
+- Reverified: 2026-09-30 · pass · sandboxes/2026-09-30__rebuild-stutter-hook-title-matcher.py · observed RESULT: PASS stutter titles: substring 4/8, hyphens-kept token matcher 3/8, hyphens-split 8/8; substring false-positives 2/2, split 0/2 · Own fixture: 8 stutter or nonsense-syllable title and line pairs I wrote (Bye Bye Bye, Ba-Ba-Baby, Ooh La La, Hey Ya, s-s-stop and others), my own stopword list, and two false-positive probes; the original used Undo It, Bennie and the Jets, Havana, Hold The Line and Wasted Time (read only after the run). The hyphens-kept token matcher found 3 of 8, fewer than substring's 4 of 8, and the hyphens-split matcher found all 8, so the ordering in the claim reproduces. My substring baseline is much weaker than the original's 7 of 8 because my titles are written with spaces where the lines use hyphens, so the 7-to-3 drop in the rule is specific to its fixture. Split matching also avoided both substring false positives (stop in stopped, na na in banana). · https://claude.ai/code/session_01PXuEX9SfJcr8Mxg6sK6stu
+- Cited-by: 2026-09-30 · projects/local__sandbox-title-matcher-stutter-split-vs-timing-hyphen-join.md#E1 · compatible · sandboxes/2026-09-30__title-matcher-stutter-split-vs-timing-hyphen-join.py · observed RESULT: PASS split finds stutter 4/4 timing 0/4; join finds timing 4/4 stutter 0/4; both views find 9/10 (hyphen cases 8/8); false positives split 1 join 0 both 1 of 3 · https://claude.ai/code/session_01PXuEX9SfJcr8Mxg6sK6stu
+- Cited-by: 2026-10-19 · projects/pappydapimp69__brainwork.md#E508 · compatible · sandboxes/2026-10-19__one-hyphen-normalisation-cannot-serve-both-rhyme-lettering-and-title-matching.py · observed RESULT: PASS rejoin-all titles 4/8 (stutter 0), split-all titles 4/8 (timing 0), dual-view 8/8, rhyme rejoin 4/4 vs last-segment 2/4 · brain train auto pass 1 (loop 2); session_01TLYDN658tW4ZQFUr2wQFj7
+- Cited-by: 2026-10-20 · projects/pappydapimp69__brainwork.md#E562 · incompatible · sandboxes/2026-10-20__stutter-hook-title-matcher-and-end-word-lettering-share-one-hyphen-split-fix.py · observed RESULT: FAIL title keep=2/8 split=8/8, lettering differs 0/8 on hyphenated ends (first-vs-last judge 2/8), plain ends agree 3/3 · brain train auto loop 1 pass 1, session 01RtrsZVYLgA8NVbKz6TAFcU; session_01RtrsZVYLgA8NVbKz6TAFcU

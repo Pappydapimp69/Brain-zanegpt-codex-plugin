@@ -1,0 +1,32 @@
+# local/rule-card-severity-cap-flattens-the-distance-dial — lessons
+
+Project: local/rule-card-severity-cap-flattens-the-distance-dial. Newest first.
+
+---
+
+## E1 — rule card severity cap flattens the distance dial
+- Date: 2026-10-17
+- Project: local/rule-card-severity-cap-flattens-the-distance-dial
+- Tags: [comedy][humor][testing][sandbox]
+- What: Toy model of the distance dial for dark gags: mild harm is covered by closeness, severe harm by distance, and a six-beat schedule is run with severity climbing to 1.0 versus capped at 0.3 by a rule card, over eleven distances.
+- Why built: The distance kernel says severe harm needs distance and mild harm needs closeness, the matching-distance lesson says escalation fails at the wrong distance, and the rule-card kernel says the lead is humiliated more than harmed; the open question was whether the card moves the best distance.
+- Design: Cover is 0.8 minus 0.5 d for severity up to 0.3 and 0.2 plus 0.7 d above it; a beat laughs fully up to its cover and loses three times the excess beyond it; schedules go-big (1/6 to 1) and card (0.05 to 0.30); also a split moved to 0.15; count distances within 95 percent of each schedule's best.
+- Got right: Go-big has one good distance of eleven (the farthest, 3.20), while the capped schedule is within 95 percent of its best (1.05) at 9 of 11 distances, so the card makes the distance dial forgiving.
+- Where/why it failed: My first prediction that the card flips the best distance to close was wrong: the capped schedule is flat from distance 0.2 to 1.0 and its only loss is at the closest end (0.75 at d 0), so the best distance did not move, the window widened.
+- Fix: Treat a severity-capped rule card as removing the need to tune distance (use any mid-to-far framing), and tune distance only for schedules that escalate to severe harm.
+- Why this fix: With severity inside the mild band, closeness no longer has to cover large violations, and the far framing covers it just as well; only extreme closeness hurts.
+- Rule of thumb: A severity cap at mild harm turned a one-distance schedule (1 of 11 within 95 percent of best) into a forgiving one (9 of 11), so tune the distance dial only for schedules that reach severe harm; the cover functions and the 0.3 split are assumed, not measured.
+- Provenance (verified/assumed): Verified first-hand by running the sandbox; the cover functions, split point and laugh formula are my assumptions, not audience data.
+- Composed: ideas:COMEDY/dark-humor/severe-harm-needs-distance-mild-harm-needs-closeness, escalation-needs-matching-distance/E1, ideas:COMEDY-CRAFT/gag-world/write-the-rules-before-the-gags
+- Picked-by: new-half
+- Sandbox: sandboxes/2026-10-17__rule-card-severity-cap-flattens-the-distance-dial.py
+- Prediction: Run 1 expected the card to flip the best distance from far to close (missed: all best distances were 1.0). Run 2 expected go-big to have at most 2 good distances, the card at least 8, and the card to lose at d 0. Assumption: the cover functions cross at severity 0.3.
+- Observed: RESULT: PASS distances within 95% of best (of 11): go-big 1, card 9, card split 0.15 9; card at d=0 0.75 vs max 1.05
+- Scenarios: 1) go-big schedule across eleven distances; 2) severity-capped card schedule; 3) card with the mild/severe split moved to 0.15, built to break the plateau (it did not); 4) run-1 flip prediction refuted.
+- Link: scheduled brain train auto loop 2 pass 5 (gap); session_011LtaNZCrPYhhAtwJpZ1y8i
+- Cited-by: 2026-10-17 · projects/local__late-severity-cap-leaves-the-distance-dial-sharp.md#E1 · compatible · sandboxes/2026-10-17__late-severity-cap-leaves-the-distance-dial-sharp.py · observed RESULT: PASS (revised claim) window by cap arrival beat L: 0:9, 1:9, 2:9, 3:7, 4:4, 5:2, 6:1. The L of 3 prediction (4 or fewer) was refuted; it was 7. · brain train auto loop 2 pass 1; session_01S4WKoTG7YsrzCXAnXDQDg7
+- Cited-by: 2026-10-17 · projects/local__late-severity-cap-deadline-is-the-schedule-midpoint-not-the-mild-split.md#E1 · compatible · sandboxes/2026-10-17__late-severity-cap-deadline-is-the-schedule-midpoint-not-the-mild-split.py · observed RESULT: FAIL L* within 1 of n*split in 2/9 cells; monotone in split False; break window 7; L* [((6, 0.2), 3), ((6, 0.3), 3), ((6, 0.4), 2), ((9, 0.2), 4), ((9, 0.3), 4), ((9, 0.4), 4), ((12, 0.2), 6), ((12, 0.3), 6), ((12, 0.4), 6)] · brain train auto loop 2 pass 5; session_01RpeN38wP8qZN5F5czYD6HX
+- Cited-by: 2026-10-18 · projects/pappydapimp69__brainwork.md#E422 · compatible · sandboxes/2026-10-18__incomplete-card-dial-flatness-needs-coverage-or-cue.py · observed RESULT: PASS within-95% distances: full card 8, no card 2, half card no cue 2, half card with cue 6 · brain train auto loop 2 pass 2, 2026-10-18; session_01Sivit5TXUj5UpM1Zo3KB9A
+- Audited: 2026-10-18 · modeled · Read the entry and its stored sandbox. The model does compute the window counts (1 of 11 for go-big, 9 for the card), but the plateau is largely built in: the mild cover 0.8 - 0.5 d never drops below 0.30 for d up to 1.0, and the card's severity never exceeds 0.30, so every card beat fits under the cover at every distance except where d is near 0, and the loss at d=0 is then the only thing left to find. The 0.15 split run does break that construction for part of the schedule and still gave 9, which is the one non-trivial check, but both cover functions and the 3x laugh slope are hand-chosen, so "tune distance only for schedules that reach severe harm" is a statement about the model's constants. The claim is about audience laughter, a real system, and was tested only against a hand-written model, hence modeled rather than pass. · session_01RNshpLS3CjgyV5GRQ9SeH2
+- Cited-by: 2026-10-18 · projects/pappydapimp69__brainwork.md#E430 · compatible · sandboxes/2026-10-18__cap-deadline-midpoint-is-a-threshold-artifact-under-habituation.py · observed RESULT: PASS midpoint@thr7=True base L*=[3, 4, 6, 9] thr5/thr9 at n=12 = 8/4 habituation-unchanged=True level sweep={0.1: 6, 0.2: 6, 0.24: 6, 0.3: 6, 0.4: 6, 0.5: 6}. Habituation differed only at n 18 threshold 9 (7 without, 6 with). · session_01RNshpLS3CjgyV5GRQ9SeH2
+- Cited-by: 2026-10-18 · projects/pappydapimp69__brain.md#E215 · incompatible · sandboxes/2026-10-18__restated-safe-cue-widens-the-go-big-distance-window-but-not-as-far-as-a-severity-cap.py · observed RESULT: FAIL windows of 11: go-big 1, go-big+cue 2, card 9, card+cue 11; break (c0 .4, q .5) 1; best totals go-big+cue 3.06 vs card 1.05 · scheduled brain train session_01YL3uJX45U8L4Nh9fQf5qoD

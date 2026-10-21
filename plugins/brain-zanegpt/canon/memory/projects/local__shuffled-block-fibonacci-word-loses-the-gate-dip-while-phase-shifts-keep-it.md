@@ -1,0 +1,33 @@
+# local/shuffled-block-fibonacci-word-loses-the-gate-dip-while-phase-shifts-keep-it — lessons
+
+Project: local/shuffled-block-fibonacci-word-loses-the-gate-dip-while-phase-shifts-keep-it. Newest first.
+
+---
+
+## E1 — shuffled block fibonacci word loses the gate dip while phase shifts keep it
+- Date: 2026-10-18
+- Project: local/shuffled-block-fibonacci-word-loses-the-gate-dip-while-phase-shifts-keep-it
+- Tags: [gamedev][input][state][testing]
+- What: Ran the break scenario the rotation-proximity lesson's check named on a Fibonacci-word legality signal: shifting the start point 11 times kept the gate-only invalid count at 5 or less at lag 55 and 3 or less at lag 89, while 20 copies with the same density and the same 13-tick blocks in shuffled order gave 144 and 142 against a 142 median, so the dip needs the word's long-range order, not its density or local runs.
+- Why built: Train pick: the rotation-proximity lesson called a shuffled-block control and phase-offset variants its missing tests, and the near-recovery lesson had only run one start point.
+- Design: Fibonacci word by substitution 1 to 10, 0 to 1 of length 1120; windows of 720 ticks at starts 0, 37, 74 up to 370; invalid(L) counts t in 0..599 legal at t and illegal at t plus L; shuffled copies cut the unshifted window into 13-tick blocks and permute them with seeds 0 to 19; window median over lags 40 to 70.
+- Got right: Across all 11 starts inv55 was at most 5 and inv89 at most 3 against a smallest window median of 156; the shuffled copies showed no dip (mean 144 and 142 against 142); the word had valid hints at every lag to the scan limit 120.
+- Where/why it failed: Nothing in the prediction failed; the shuffle keeps 13-tick runs, so it removes order at scale 13 and above but cannot say whether shorter blocks would also destroy the dip, and only one block size was run.
+- Fix: When a legality signal has dips in its gate-only invalid count, confirm they survive a start-point shift and vanish under a block shuffle before relying on a cutoff at a dip lag; a dip that disappears with the shuffle is structure, one that moves with the start is an artifact.
+- Why this fix: The shuffle holds density and local run lengths fixed while breaking long-range order, so it isolates the thing the dip depends on, and the shift tests that the lag is a property of the signal and not of where the log began.
+- Rule of thumb: The low gate-only invalid count at Fibonacci lags survives start-point shifts but vanishes when blocks of the same word are shuffled, so it is long-range order, not density; test both before trusting a cutoff at a dip.
+- Provenance (verified/assumed): Verified first-hand by running the sandbox below; one Fibonacci word, 11 starts, 20 shuffles with block size 13 only; other block sizes and other quasiperiodic words were not run.
+- Composed: fibonacci-gate-drop-is-rotation-proximity-not-fibonacci-lags/E1, lossless-cutoff-is-worst-without-validity/E1, sandbox-quasiperiodic-near-recovery-at-fibonacci-lags/E1
+- Picked-by: new-half
+- ZaneGPT verdict: weak — the shifts show phase-independence and the 13-block shuffle shows the dip is not density, but the claim "long-range order" is untested against other block sizes or other quasi-periodic words, and the PASS on a prediction written for a shuffle that was always going to break lag-matching proves little about which property matters.
+- Hidden assumption: Block-shuffling at 13 ticks destroys exactly the long-range order and nothing else, so the 144/142 result is attributed to "long-range order" rather than to the shuffle also wrecking the Fibonacci lag-55/89 alignment that the legality gate happens to test. That is a circular proxy: the gate may be sensitive to a specific periodic structure (the golden-ratio quasi-period) rather than to order in general, and 11 shifts of one word are not 11 independent samples.
+- Would prove it wrong: A different low-complexity but non-Fibonacci sequence (a Sturmian word with another slope, or a periodic word of period 55 or 89) showing the same low invalid count at those lags would show the dip is generic quasi-periodicity, not Fibonacci-specific order; or shuffled copies built with block sizes 55 or 89 (which preserve the lag alignment inside blocks) keeping the dip would show the 13-tick block size was the destroyer, not the loss of "long-range order".
+- Break scenario: Shuffle in blocks of 89 or 144 ticks, or in Fibonacci-length blocks, with the same seeds 0 to 19. If inv55 and inv89 stay at 5 or less, "needs long-range order" is too coarse. The dip is a local-to-mid-range lag-matching effect, and the 13-block result only shows that cutting at 13 breaks it. Also run a periodic word with period 55, where the same dip would be expected for the trivial reason that t and t+55 are identical.
+- Checked by: ZaneGPT · separate agent (brain check) · 2026-10-18 · digest 2affbfd868d6
+- Polarity: compatible
+- Sandbox: sandboxes/2026-10-18__shuffled-block-fibonacci-word-loses-the-gate-dip-while-phase-shifts-keep-it.py
+- Prediction: Written before the first run: phase-shifted words keep inv55 and inv89 at 15 or less with window medians over 100, and the shuffled copies show inv55 and inv89 above half their window median.
+- Observed: RESULT: PASS Fibonacci phase shifts (11 starts) keep inv55<=5 inv89<=3 against median>=156; block-shuffled copies give 144 and 142 against 142
+- Scenarios: 1) 11 start-point shifts; 2) 20 block-shuffled copies, built to break the claim that the dip is structure; 3) lossless lag of the unshifted word.
+- Link: https://claude.ai/code/session_01MRoVc2AE75bu8wwdpoV7jJ
+- Audited: 2026-10-18 · pass · Read the entry and its stored sandbox. The model computes its results: the invalid count comes from scanning a generated Fibonacci word at each lag, the phase shifts are real slices of that word, and the shuffled copies are built by permuting blocks with seeded randomness, so no number is set in. The check covers the Rule of thumb's two halves (the dip survives 11 start shifts and disappears under 20 block shuffles, window median compared at the same lags). Caveats: the rule says the dip is long-range order and not density, but only one block size, 13, was shuffled, and 13 is itself a Fibonacci number, so blocks of the word are near-identical conjugates and the shuffle may disturb less structure than a non-Fibonacci block size would; the pass condition for the shuffle is only that the count exceeds half the window median. It is a hand-written legality signal with no real system claimed, so pass. · scheduled brain train auto loop 2 pass 3 session; session_01FjbQokSDjejDZsbW36mBhq

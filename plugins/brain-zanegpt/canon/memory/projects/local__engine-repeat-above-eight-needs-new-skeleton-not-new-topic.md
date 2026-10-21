@@ -1,0 +1,31 @@
+# local/engine-repeat-above-eight-needs-new-skeleton-not-new-topic — lessons
+
+Project: local/engine-repeat-above-eight-needs-new-skeleton-not-new-topic. Newest first.
+
+---
+
+## E1 — engine repeat above eight needs new skeleton not new topic
+- Date: 2026-10-15
+- Project: local/engine-repeat-above-eight-needs-new-skeleton-not-new-topic
+- Tags: [comedy][game-ads][testing][sandbox]
+- What: With eight comic engines assigned round-robin, a batch above eight ideas must repeat an engine, and in a toy template-similarity model that repeat is flagged unless it brings a new beat skeleton: one skeleton per engine gave max pair similarity 0.07 at 8 ideas and 1.00 at 9; two fully distinct skeletons per engine kept 0.07 up to 16 ideas and hit 1.00 again at 17; a variant that changed only one beat of five scored 0.60, right at the flag line.
+- Why built: The engine-first lesson says cap repeats at ceil(k/8) rather than forbid them. The anti-template rule says a swapped topic in the same shape reads as mass-produced. I wanted to know whether an allowed repeat is actually safe, and what the repeat has to change.
+- Design: Each engine owns a five-beat skeleton plus voice, layout and endpoint; game name excluded. Similarity is Jaccard over beat bigrams plus those fields, flag at 0.6 (assumed threshold). Batches of 8, 9, 16 and 17 under three policies: one skeleton per engine, two distinct skeletons per engine, and a near-variant changing one beat (built to BREAK the idea that any variant cures the repeat). No randomness.
+- Got right: The k=9 and k=17 repeats flagged at 1.00 exactly where pigeonhole forces them, and new skeletons removed the flag up to the next pigeonhole point.
+- Where/why it failed: The near-variant did not cure the repeat: 0.60 at k=16, equal to the flag line, so one changed beat is borderline at best. The prediction that it would be at least 0.6 held only with equality, so it depends on my threshold and bigram features.
+- Fix: When a batch exceeds 8 ideas, give each repeated engine a new skeleton (different beats, endpoint, voice, layout), not a new topic or a one-beat variant, and plan a hard stop at two skeletons times eight engines.
+- Why this fix: A repeated engine is allowed by the cap, but the similarity check compares structure, so only structural novelty lowers it (0.07 versus 1.00); the one-beat variant stayed at 0.60.
+- Rule of thumb: The ceil(k/8) engine cap makes a repeat legal but not safe: in my toy similarity model a repeat with the same skeleton scored 1.00 and a one-beat variant 0.60, while a new skeleton scored 0.07, so a repeated engine needs a new skeleton and the batch still tops out at 16 with two per engine.
+- Provenance (verified/assumed): Verified first-hand by running the sandbox; the feature set, 0.6 flag and skeleton shapes are my assumed model, not a platform detector or viewer data.
+- Composed: ideas:AI-VIDEO/monetization-policy/every-video-gets-its-own-joke-and-script, fake-ad-kernel-source-check/E1, engine-first-idea-batches/E1
+- Picked-by: new-half
+- Polarity: compatible
+- Sandbox: sandboxes/2026-10-15__engine-repeat-above-eight-needs-new-skeleton-not-new-topic.py
+- Prediction: Max similarity under 0.3 at 8 ideas, at least 0.9 at 9 with one skeleton, under 0.3 up to 16 with two distinct skeletons and flagged again at 17, and a one-beat variant at 0.6 or more. Assumption: a repeated engine implies a shared skeleton.
+- Observed: RESULT: PASS k=8 0.07; one skeleton k=9 1.00; two distinct k=16 0.07, k=17 1.00; one-beat variant k=16 0.60
+- Scenarios: 1) one skeleton per engine at k=8, 9, 16, 17; 2) two distinct skeletons per engine; 3) one-beat near-variant (BREAK); 4) pigeonhole edges 9 and 17
+- Link: session_01A5ZkeepCfk7CHTSxS7qQ4k
+- Cited-by: 2026-10-15 · projects/local__batch-ceiling-trope-cap.md#E1 · compatible · sandboxes/2026-10-15__a-batch-needs-distinct-cells-and-skeleton-slots-at-once-so-the-trope-cap-sets-the-ceiling.py · observed RESULT: PASS max distinct batch by trope cap 1/2/3/6 = [6, 12, 16, 16] with 3-axis engines [6, 12, 16, 16] 1-axis engines [6, 12, 16, 16] (the 1-axis expectation was refuted) · scheduled brain train auto loop 2 pass 2 (edge); session_01Twuh3aqxvcX5mmf7uhRTr7
+- Cited-by: 2026-10-15 · projects/pappydapimp69__brain-auto-training.md#E21 · incompatible · sandboxes/2026-10-15__axis-swap-position-sets-same-trope-similarity.py · observed RESULT: FAIL edge-swap mean 0.689 vs middle-swap 0.600; k=6 max 0.067, k=7 max 0.455; unresolved kernel labels 1 · brain train auto loop 1 pass 5; session_01USEQKxFedmHB9RNfo9RMD6
+- Cited-by: 2026-10-15 · projects/pappydapimp69__brain-auto-training.md#E23 · compatible · sandboxes/2026-10-15__engine-cap-check-needs-verbatim-engine-labels.py · observed RESULT: PASS free-text miss at 0.4 = 0.768 (at 0.0 = 0.000), closed-vocab miss = 0.000, bounced 0.401 · brain train auto loop 1 pass 2; session_01USEQKxFedmHB9RNfo9RMD6
+- Audited: 2026-10-17 · modeled · Read the entry and its stored sandbox, and reran it (RESULT PASS, same numbers). Q1: the similarity is a Jaccard over hand-built features, so the headline numbers follow from the construction rather than from a measured system: a repeated engine reuses identical beats (similarity 1.00 by definition), a distinct skeleton shares only the length feature (1 of 15 features, 0.07), and the one-beat variant shares 6 of 10 features, which is 0.60 exactly. Only the 0.60 and the pigeonhole points at 9 and 17 are real computation; the entry itself admits the 0.6 flag is an assumed threshold, and the one-beat variant lands precisely on it, so the BREAK scenario flips with a flag of 0.61. Q2: the Rule says a repeated engine needs a new skeleton and the batch tops out at 16; the sandbox covers 8, 9, 16 and 17 ideas with 8 engines but only one near-variant (one swapped beat), so claims about partial variants beyond one beat are untested. Q3: the claim is about how platforms read mass-produced templates, a real system, and only a hand-written feature model was tested, so the verdict is modeled, not pass. The pigeonhole part (more than 8 ideas must repeat an engine) is arithmetic and holds regardless. · session 2026-10-17 scheduled brain train, loop 1 pass 3 audit; session_01KkkcHHGkp6Sm9GJK6fsa84

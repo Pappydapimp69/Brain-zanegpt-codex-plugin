@@ -1,0 +1,28 @@
+# local/data-ink-ratio-is-blind-to-provenance-real-output-artifact-check — lessons
+
+Project: local/data-ink-ratio-is-blind-to-provenance-real-output-artifact-check. Newest first.
+
+---
+
+## E1 — data ink ratio is blind to provenance real output artifact check
+- Date: 2026-10-11
+- Project: local/data-ink-ratio-is-blind-to-provenance-real-output-artifact-check
+- Tags: [presentation][design][verification][testing]
+- What: Generated real SVG bar charts from a 24-line request log and showed that stripping chartjunk lifts the data-ink ratio from 0.16 to 1.00 with the recovered values unchanged, but a chart of fabricated numbers scores the identical 1.00 and only a recompute against the shown log exposes it (28.5 ms maximum error versus 0.02 for the real chart).
+- Why built: To test the data-ink kernel together with the show-the-real-artifact kernel and the finding that a density-style proxy cannot see where content came from.
+- Design: Each chart element is typed as data-bearing or decoration with an ink length (bars, labels, category text versus 3D faces, shadows, icons, dense gridlines). A reader function parses the SVG and recovers values from printed labels or, failing that, from bar heights against labelled gridlines. Charts: chartjunk, stripped real, stripped fabricated, and over-stripped (no labels, no gridlines).
+- Got right: Stripping removed 84 percent of the ink without changing the recovered values (within 0.06), and the stripped fabricated chart had a ratio equal to the real one to nine decimals, so the metric is blind to provenance exactly as the density alarm was.
+- Where/why it failed: The over-stripped chart kept a ratio of 1.00 while its values became unrecoverable (no label or gridline to calibrate against), so the ratio rewards an unreadable chart; a gridline can be data-bearing, which makes the decoration classification a judgment the ratio cannot make. The element typing is my own, so the 1.00 for clean charts holds by construction.
+- Fix: Treat the data-ink ratio as a decoration check only, keep calibration marks that the reader needs, and pair every shown number with the artifact it was computed from (the log lines) so a recompute can catch fabricated values.
+- Why this fix: The ratio and the artifact recompute vary independently in the run: ratio does not move between real and fabricated, and the recompute error does not move with decoration.
+- Rule of thumb: A perfect data-ink ratio says nothing about whether the data is true or readable: a fabricated chart scored 1.00 like the real one and an over-stripped chart scored 1.00 while unreadable, so show the source artifact beside the chart and keep the calibration marks.
+- Provenance (verified/assumed): Verified first-hand by running the sandbox; the log, chart renderer and element classification are synthetic and written for this run.
+- Composed: ideas:PRESENTATION/data-ink-ratio-cut-chartjunk, ideas:PRESENTATION/show-real-output-as-evidence-not-just-claims, sandbox-empathy-map-density-hides-evidence-gap/E1
+- Polarity: compatible
+- Sandbox: sandboxes/2026-10-11__data-ink-ratio-is-blind-to-provenance-real-output-artifact-check.py
+- Prediction: Junk ratio below 0.5 and stripped above 0.85 with values preserved; fabricated stripped chart has the same ratio but at least 20 ms error against the log; over-stripped chart keeps ratio near 1.0 with values unrecoverable.
+- Observed: RESULT: PASS data-ink ratio junk 0.16 -> clean 1.00 with values preserved; fabricated chart has identical ratio 1.00 but 28 ms error against the log; over-stripped chart ratio 1.00 with values unrecoverable
+- Scenarios: 1) chartjunk chart; 2) stripped real chart; 3) stripped fabricated chart; 4) over-stripped chart with no labels or gridlines (built to BREAK the ratio as a quality measure).
+- Link: scheduled brain train auto pass 5 gap (loop 2); session_01XnmhGgGPuzgG9LkLZW48Sm
+- Cited-by: 2026-10-11 · projects/local__sandbox-pasted-output-goes-stale-evidence-ratio-blind.md#E1 · compatible · sandboxes/2026-10-11__pasted-real-output-goes-stale-and-a-high-evidence-ratio-cannot-tell.py · observed RESULT: PASS evidence ratio 1.0 for real and fabricated alike; v2 leaves 4 false pasted claims, re-run flags 4, rebaselined re-run flags 0 of 3 changed · brain train auto loop 2 pass 5 (gap, kernel); session_012QzNKQEGhirAziWZ2Cg9Tj
+- Audited: 2026-10-11 · modeled · Read the entry and its stored sandbox and reran it (same RESULT, 0.16 to 1.00, fabricated error 28.0). Part of it is computed: the SVG is parsed by a reader and the value error against the log (about 0 for the real chart, 28 ms for the fabricated one, values unrecoverable for the bare one) comes out of that parse, not a typed number. But the central claim, that the ratio cannot see provenance, is built in: each element carries a hand-set is-data flag and ink length, and the ratio is the sum of flagged ink over total ink, so the function never reads a value and the fabricated and real charts must tie at 1.00 by construction. The over-stripped 1.00 is likewise a consequence of how elements were classified, since dropping labels and gridlines removes only decoration-typed ink. The rule of thumb speaks about data-ink ratio as practised on real charts, while the tested ratio is the author's own proxy over hand-written SVG, and the log is synthetic, so what was shown is that a value-blind proxy is value-blind, plus a working recompute-against-source check. Verdict modeled rather than pass: the recompute half is real, the blindness half is assumed. · brain train auto loop 2 pass 3 (audit); session_01MWSgVSo3kzvSufZC4PAqmL

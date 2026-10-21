@@ -1,0 +1,5 @@
+{
+  "_comment": "Families that automatic training (`brain train auto`, and the audit, rebuild and edge picks) must skip. A lesson is skipped when any pattern matches its file name, title, What, Why built, Rule of thumb or Composed text. Patterns are case-insensitive regexes. Skipping only stops training from picking it; the lessons stay in canon and still count everywhere else. With collapse true (default) the same families also fold into one node in the co-verification graph and one 'skipped families' row in the scorecard, so their many variants stop inflating edge counts and subject scores.",
+  "patterns": [],
+  "collapse": true
+}

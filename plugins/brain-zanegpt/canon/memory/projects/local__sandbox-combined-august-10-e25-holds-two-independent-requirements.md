@@ -1,0 +1,22 @@
+# local/sandbox-combined-august-10-e25-holds-two-independent-requirements — lessons
+
+Project: local/sandbox-combined-august-10-e25-holds-two-independent-requirements. Newest first.
+
+---
+
+## E1 — sandbox combined august 10 e25 holds two independent requirements
+- Date: 2026-08-29
+- Project: local/sandbox-combined-august-10-e25-holds-two-independent-requirements
+- Tags: [timezone][scheduling][correctness][process]
+- What: A deterministic sandbox (365 simulated days, fixed DST transition indices, no RNG) comparing +24h scheduling arithmetic against a per-day calendar rebuild, then separately deriving the idempotency keys two distinct UTC instants produce at the fall-back hour.
+- Why built: august-10#E25 records that "daily at 7am" and "every 24 hours" are different programs, that +24h arithmetic put 238 of 365 runs at the wrong local hour in a DST zone, that a nonexistent local time resolves silently, and that an ambiguous one has two instants formatting identically so idempotency must be keyed on UTC. This tests whether adopting the entry's headline remedy — rebuild per day — also satisfies its idempotency requirement, or whether the entry contains two independent obligations that are easy to conflate.
+- Design: A year with a spring-forward day making 2am nonexistent and a fall-back day where 1am occurs twice. The +24h schedule advances a UTC instant by a fixed 24 hours; the rebuild recomputes the instant from local time and the day's offset. Separately, the two distinct UTC instants at the ambiguous hour are rendered through a local formatter using each instant's own offset in force, and both a local-string key and a UTC key are compared.
+- Got right: An initial version hardcoded the two local-time keys as identical strings, which asserted the collision rather than demonstrating it; the corrected version derives each key from its instant and the offset actually in force, so the collision is computed.
+- Where/why it failed: The +24h schedule places 220 of 365 runs at the wrong local hour and the calendar rebuild places none — E25's headline finding reproduced. But the rebuild does nothing for idempotency: at the fall-back hour, UTC instants 7206 and 7207 are genuinely distinct yet both render as "day300 01:00", so a local-string idempotency key collides and silently suppresses the second run, while a UTC-derived key correctly distinguishes them.
+- Fix: Treat august-10#E25 as two separate obligations and verify each — rebuild the instant per day for correct wall time, AND derive idempotency keys from the UTC instant rather than any local rendering — because satisfying the first leaves the second broken.
+- Why this fix: E25's most memorable content is the 238-of-365 wall-clock statistic, which makes the calendar rebuild feel like the entry's remedy. The idempotency requirement is stated as a trailing clause and applies to a different code path, so a team that adopts the rebuild has visibly fixed the loud symptom while retaining a defect that manifests on exactly one day a year and suppresses a run rather than misplacing it.
+- Rule of thumb: august-10#E25 contains two independent requirements, and the loud one hides the quiet one — sandbox-confirmed a per-day rebuild fixes all 220 of 365 misplaced runs while two distinct UTC instants at the fall-back hour still render identically as "day300 01:00", so a local-string idempotency key collides and suppresses a real run; key idempotency on UTC separately.
+- Provenance (verified/assumed): Verified first-hand — ran the sandbox (python3 /tmp/claude-0/-home-user-Collective/03220183-5f9d-542d-a9df-b5021c043261/scratchpad/b20/l38.py), including a first version that hardcoded the colliding keys rather than deriving them; confirmed 220 of 365 wrong-hour runs under +24h arithmetic against 0 under the rebuild, and that instants 7206 and 7207 both derive the local key "day300 01:00" while remaining distinct as UTC values. august-10#E25 was read directly via `brain query` before designing the sandbox.
+- Composed: pappydapimp69__august-10/E25, pappydapimp69__august-10/E13
+- Link: session_014mRpopK9xnhvk35tT8ozkX
+- Cited-by: 2026-10-14 · projects/pappydapimp69__brainwork.md#E267 · compatible · sandboxes/2026-10-14__sandbox-wall-clock-window-shrinks-on-spring-forward-and-worst-case-padding.py · observed RESULT: PASS normal-night P=0.904 shared vs 1.000 independent; spring-forward 0.829; fall-back 0.935 still short of 1 · brain train auto pass 2 edge mode, unattended run 2026-10-14; session_018eKNqSCZk9zsMEo2AXSjsk

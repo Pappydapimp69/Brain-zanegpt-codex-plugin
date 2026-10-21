@@ -1,0 +1,23 @@
+# local/sandbox-combined-august-10-brain-builder-conjunct-rates-cannot-see-a-routing-defect — lessons
+
+Project: local/sandbox-combined-august-10-brain-builder-conjunct-rates-cannot-see-a-routing-defect. Newest first.
+
+---
+
+## E1 — sandbox combined august 10 brain builder conjunct rates cannot see a routing defect
+- Date: 2026-08-29
+- Project: local/sandbox-combined-august-10-brain-builder-conjunct-rates-cannot-see-a-routing-defect
+- Tags: [observability][testing][simulation][method]
+- What: A deterministic sandbox (2000 fixed iterations, modular arithmetic instead of RNG) instrumenting a two-conjunct event under august-10#E17's per-conjunct marginal-rate remedy, then re-running the same event with brain-builder#E9's side-targeting misroute applied.
+- Why built: august-10#E17 records that an outcome counter at 0 reads identically for "correctly rare" and "structurally impossible," prescribes instrumenting each conjunct's marginal rate and multiplying, and warns that measuring the DECISION is not measuring the ACTION. brain-builder#E9 records that a per-fighter flag whose name reads cosmetic but whose read site is the side-targeting mechanism silently misroutes a new actor's attacks onto its own side, and prescribes testing WHO hit WHOM. This tests how far E17's instrumentation reaches.
+- Design: An event requiring two independent conjuncts, run at realistic marginal rates (0.065 and 0.031) and again with the first conjunct forced structurally impossible, then run again at healthy rates with and without a target misroute, recording arrivals, willingness, decisions, fires and hits-landed-on-enemy.
+- Got right: Keeping the fire count identical between the correctly-routed and misrouted runs by construction, so the comparison isolates the target dimension rather than confounding it with a change in how often the action occurred.
+- Where/why it failed: august-10#E17's remedy works exactly as recorded — arrival rate 0.0000 cleanly separates structurally-impossible from correctly-rare where both show a near-zero fire count. But it is measured on preconditions, upstream of the action. brain-builder#E9's misroute leaves every conjunct rate healthy and the fire count identical at 4 in both runs, with hits-on-enemy at 4 versus 0. No amount of conjunct instrumentation reaches it.
+- Fix: Extend august-10#E17's instrumentation ladder by one rung — record not only each conjunct's marginal rate and the action's fire count, but the action's TARGET distribution — and treat a healthy conjunct profile as evidence about reachability only, never about correctness of effect.
+- Why this fix: E17 already articulates that measuring the decision is not measuring the action, which correctly moves instrumentation one step downstream. brain-builder#E9's defect sits one step further downstream still, and because it leaves every metric E17 prescribes unchanged, adopting E17's remedy in full produces a dashboard that is complete by its own definition and blind to the routing class.
+- Rule of thumb: august-10#E17's per-conjunct instrumentation measures reachability, not correctness of effect — sandbox-confirmed a brain-builder#E9 target misroute leaves every conjunct rate healthy and the fire count identical at 4 while hits-on-enemy goes 4 to 0; E17's "the decision is not the action" needs a third rung, the action is not its target.
+- Provenance (verified/assumed): Verified first-hand — ran the sandbox (python3 /tmp/claude-0/-home-user-Collective/03220183-5f9d-542d-a9df-b5021c043261/scratchpad/b7/l19.py) and confirmed arrival rate 0.0650 vs 0.0000 separates rare from impossible at fire counts 4 and 0, and that the misroute yields fired=4 in both routings with landed_on_enemy 4 versus 0. august-10#E17 and brain-builder#E9 were read directly via `brain query` before designing the sandbox.
+- Composed: pappydapimp69__august-10/E17, pappydapimp69__brain-builder/E9
+- Link: session_014mRpopK9xnhvk35tT8ozkX
+- Cited-by: 2026-09-28 · projects/local__sandbox-combined-august-10-predicted-vs-observed-blind-to-misroute.md#E1 · compatible · no sandbox · brain train scheduled pass, 2026-09-28
+- Cited-by: 2026-10-09 · projects/local__sandbox-empathy-map-density-hides-evidence-gap.md#E1 · compatible · sandboxes/2026-10-09__empathy-map-density-hides-evidence-gap-and-simulation-masks-sparseness.py · observed RESULT: FAIL 19/20 checks; imagined prec=0.29 vs N=12 prec=1.00 (both alarms=0); N=3 exercise false +9, alarms 4->0; designer==user imagined prec=0.69 (pre-registered B1 missed; proj=1.0 gives 1.00). Convenience N=12 precision 0.25 with ze… · brain train kernel pass 1 (slot 1 of trainrun8), sandbox in this folder; session_01YFLLRpDsfZpRstb2KT2MQy

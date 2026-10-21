@@ -1,0 +1,22 @@
+# local/sandbox-combined-mirage-brain-builder-negative-control-needs-binding-rate — lessons
+
+Project: local/sandbox-combined-mirage-brain-builder-negative-control-needs-binding-rate. Newest first.
+
+---
+
+## E1 — sandbox combined mirage brain builder negative control needs binding rate
+- Date: 2026-08-29
+- Project: local/sandbox-combined-mirage-brain-builder-negative-control-needs-binding-rate
+- Tags: [testing][method][balance][verification]
+- What: A deterministic sandbox (fixed damage tables, no RNG, no wall-clock) running mirage#E16's negative-control procedure — revert the guard, require the outcome to differ — against a percent-max-HP damage cap across three regimes, with brain-builder#E4's binding-rate instrument measured alongside each verdict.
+- Why built: mirage#E16 prescribes negative-controlling every guard (revert the defect, watch the test fail) as the way to tell load-bearing guards from decorative ones, since a test sharing its feature's assumption passes on both correct and defective code. brain-builder#E4 separately notes a clamp is only free where it does not bind. This tests whether the negative control's verdict is a property of the GUARD or a property of the FIXTURE'S REGIME — i.e. whether a correctly-executed negative control can report a genuinely load-bearing guard as dead.
+- Design: One resolve() with a cap at 25% of max HP and a `cap_enabled` flag standing in for the reverted defect. Three fixed hit tables: a tuned test-fixture regime whose hits all sit below the cap, and two production-shaped regimes (occasional big hit; crit-heavy) whose hits cross it. For each regime the sandbox runs mirage#E16's negative control (does reverting the guard change the outcome) and simultaneously records brain-builder#E4's binding rate (what fraction of hits the cap actually clamped).
+- Got right: Measuring both properties against the identical resolve path per regime, rather than reasoning about them separately, made the correlation between binding rate and negative-control informativeness directly observable instead of inferred.
+- Where/why it failed: In the test-fixture regime the binding rate is 0.000 — no hit ever exceeds the cap — so reverting the guard changes the total not at all (48.0 both ways) and mirage#E16's negative control returns "outcome did not differ," i.e. reports the cap as NOT load-bearing. The same guard is demonstrably load-bearing in both production regimes (76.0 vs 128.0 at binding rate 0.333; 150.0 vs 213.0 at binding rate 1.000). A correctly-run negative control therefore delivers a confidently wrong verdict whenever the fixture's regime sits entirely inside the guard's slack.
+- Fix: Pair every negative control with brain-builder#E4's binding-rate instrument and treat a zero binding rate as UNINFORMATIVE rather than as a passing or failing result — the negative control may only be interpreted once the fixture is shown to actually exercise the guard, which means constructing the fixture from the regime where the guard binds, not from convenient tuned values.
+- Why this fix: The negative control asks "does reverting this change the outcome," which is only a question about the guard when the guard is live in the tested regime; where it is dormant the procedure is asking about the fixture instead and cannot tell the two apart. The binding rate is the discriminator that makes the difference visible, and it is cheap — it is already the instrument brain-builder#E4 prescribes for a neighbouring reason.
+- Rule of thumb: mirage#E16's negative control only reports on a guard within the regime the fixture exercises — instrument brain-builder#E4's binding rate alongside it and treat rate == 0 as "this fixture cannot see this guard," never as evidence the guard is decorative, since a dormant guard and an absent one are indistinguishable by outcome alone.
+- Provenance (verified/assumed): Verified first-hand — ran the sandbox (python3 /tmp/claude-0/-home-user-Collective/03220183-5f9d-542d-a9df-b5021c043261/scratchpad/sb6/s.py) and confirmed the test-fixture regime yields binding rate 0.000 with identical guarded/unguarded totals (48.0/48.0) and a "NOT load-bearing" negative-control verdict, while the same guard returns "load-bearing" at binding rates 0.333 and 1.000 in the two production regimes. mirage#E16 and brain-builder#E4 were read directly via `brain query` before designing the sandbox.
+- Composed: pappydapimp69__mirage/E16, pappydapimp69__brain-builder/E4
+- Link: session_014mRpopK9xnhvk35tT8ozkX
+

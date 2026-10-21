@@ -1,0 +1,24 @@
+# local/sandbox-combined-august-10-batching-for-ratio-is-buffering-for-latency — lessons
+
+Project: local/sandbox-combined-august-10-batching-for-ratio-is-buffering-for-latency. Newest first.
+
+---
+
+## E1 — sandbox combined august 10 batching for ratio is buffering for latency
+- Date: 2026-08-29
+- Project: local/sandbox-combined-august-10-batching-for-ratio-is-buffering-for-latency
+- Tags: [compression][performance][architecture][measurement]
+- What: A deterministic sandbox (200 fixed varied messages, real zlib, no RNG) measuring compression ratio against batch size from 1 to 128, recording the buffering latency each batch size implies and locating the diminishing-returns knee.
+- Why built: august-10#E24 records that compression ratio on small similar messages is decided by dictionary scope rather than algorithm or level, that per-message compression can expand below roughly 128 bytes per message, and that batching recovers most of the gap. august-10#E22 records that a bounded queue cannot smooth sustained overload and that past a knee every depth serves the same count and differs only in steady latency. This tests whether E24's remedy is bounded by E22's law.
+- Design: Two hundred realistically varied tick messages (differing actor ids, HP and positions, 58 bytes each) compressed per-message and in batches of 2 through 128 using real zlib, with each batch size's implied added latency recorded as batch minus one messages buffered. A first construction used identical messages, whose ratio improved without bound and produced no knee — replacing them with varied ones made the saturation real.
+- Got right: Using actual zlib output rather than a modelled cost function, so the ratio curve and its knee are measured properties of a real compressor rather than artifacts of invented constants.
+- Where/why it failed: Per-message compression EXPANDS the payload at 0.92x, reproducing E24's sub-128-byte finding, while batching reaches 5.74x at batch 64. But the ratio curve knees at batch 8: beyond it each doubling of batch size adds latency for almost no further ratio, reaching only 6.17x at batch 128 while buffering 127 messages. Batching for dictionary scope IS buffering, so E24's remedy purchases ratio in exactly the currency E22 says a buffer spends past its knee.
+- Fix: Size the batch AT the measured ratio knee rather than as large as throughput allows, and treat any batch beyond it as pure added latency with no compression benefit — measure the knee on real traffic rather than assuming bigger is better.
+- Why this fix: Neither entry names the other's variable. E24 is stated in ratio terms and invites maximising batch size; E22 is stated in queue terms and is not obviously about compression at all. Because the mechanism is identical — both are buffering — adopting E24 alone leads directly to the configuration E22 identifies as strictly wasteful.
+- Rule of thumb: august-10#E24's batching-for-dictionary-scope IS buffering, so it is bounded by august-10#E22's knee law — sandbox-confirmed with real zlib that per-message compression expands at 0.92x and batching reaches 5.74x at 64, but the ratio knees at batch 8 and only reaches 6.17x at 128 while buffering 127 messages; size the batch at the measured knee.
+- Provenance (verified/assumed): Verified first-hand — ran the sandbox (python3 /tmp/claude-0/-home-user-Collective/03220183-5f9d-542d-a9df-b5021c043261/scratchpad/b19/l37.py) using real zlib over 200 varied 58-byte messages, including a first construction with identical messages whose ratio never saturated; confirmed per-message 0.92x, batch-64 5.74x, batch-128 6.17x and a diminishing-returns knee at batch 8. august-10#E24 and august-10#E22 were read directly via `brain query` before designing the sandbox.
+- Composed: pappydapimp69__august-10/E24, pappydapimp69__august-10/E22
+- Link: session_014mRpopK9xnhvk35tT8ozkX
+- Cited-by: 2026-09-28 · projects/local__sandbox-reverify-batch-compression-knee.md#E1 · compatible · no sandbox · scheduled brain train pass, session_01V7YD4FYfs8eKkpz3fWBxkf
+- Cited-by: 2026-10-09 · projects/pappydapimp69__brainwork.md#E38 · compatible · sandboxes/2026-10-09__compression-worst-case-growth-bounded-by-stored-fallback.py · observed RESULT: PASS growth: rle grew 4446/8190, fallback cap +1, zlib random 4107>4096, per-msg 2486>1974>batch 191 · session_0177RNbpM9ouiodK1KEajhTr
+- Cited-by: 2026-10-15 · projects/pappydapimp69__brainwork.md#E290 · compatible · sandboxes/2026-10-15__batching-knee-measured-on-recycled-messages-moves-with-pool-size.py · observed RESULT: PASS recycled inputs overstate batch-128 ratio [19.2, 11.5, 5.4, 1.9] vs varied 3.37; identical shows no knee; pool P appears as a ratio jump at batch {'pool4': 8, 'pool16': 32, 'pool64': 128}; varied knee was 64 (predicted <=16, m… · brain train auto loop 2 pass 2; session_01Kx9Pq1H5qpcbvZJ9u2DPKR

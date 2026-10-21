@@ -1,0 +1,32 @@
+# local/solder-joint-steady-state-decides-not-dwell-time — lessons
+
+Project: local/solder-joint-steady-state-decides-not-dwell-time. Newest first.
+
+---
+
+## E1 — solder joint steady state decides not dwell time
+- Date: 2026-10-17
+- Project: local/solder-joint-steady-state-decides-not-dwell-time
+- Tags: [soldering][sandbox][numerics][model]
+- What: New domain SOLDERING seeded from a bench scenario: a lumped joint node heated by an iron tip (0.5 W/K) and cooled by the board. A small pad (0.1 W/K to the board) reaches SAC305 liquidus (217 C) in 0.62 s with a 350 C tip; a ground-plane pad (0.5 W/K) has a steady state of 187.5 C and never melts at any dwell, even with a 400 C tip (212.5 C). Preheating the board to 100 C lifts the steady state to 225 C and melts it in 0.82 s.
+- Why built: Seeding a domain with no records. The common advice for a joint that will not wet is to hold the iron longer; I wanted to see when time is the wrong variable.
+- Design: First-order lumped model C dT/dt = Gt(Ttip - T) + Gb(Tamb - T) with C=0.3 J/K, closed-form melt time or none when the steady state is at or under 217 C. Scenarios: small pad, ground plane, ground plane with a 400 C tip, and ground plane with a 100 C board (the last two built to BREAK the claim that dwell is the only fix). No randomness.
+- Got right: Whether a joint can melt depends on the steady-state temperature, which is set by the ratio of tip conductance to board conductance, and the model separates the two cases cleanly (0.62 s versus never).
+- Where/why it failed: My assumption that a hotter tip alone would rescue the ground-plane joint failed: 400 C still gives only 212.5 C, 4.5 C short, so raising iron temperature is not enough where the board conductance equals the tip conductance; only changing a conductance or the board temperature moved the steady state over the line.
+- Fix: Estimate the steady state before choosing dwell: if tip conductance over total conductance times the temperature rise is below the liquidus gap, preheat the board or use a larger tip, rather than extending dwell or raising the tip alone.
+- Why this fix: A first-order system approaches its steady state exponentially, so extra time cannot cross a steady state below the target, while the preheat raises the baseline and the larger tip changes the ratio.
+- Rule of thumb: A joint melts only if its steady state, ambient plus rise times tip conductance over total conductance, exceeds the liquidus (187.5 C for a ground-plane pad at 350 C, 225 C with a 100 C preheat); when it does not, dwell time is irrelevant, so preheat or enlarge the tip.
+- Provenance (verified/assumed): Verified first-hand by running the sandbox; the conductances, heat capacity and 217 C liquidus are assumed or recalled round numbers and no real iron or board was measured. This domain has no adjacent kernel or lesson in Brain, so the entry is isolated and cites nothing.
+- Composed: N/A
+- Picked-by: current-half
+- Polarity: compatible
+- Sandbox: sandboxes/2026-10-17__solder-joint-never-melts-when-steady-state-below-liquidus.py
+- Prediction: Small pad melts in about 1 s at 350 C; ground-plane pad never melts at 350 C or 400 C (steady state below 217 C); preheating the board to 100 C melts it in under 5 s. Assumption: a first-order lumped model; a ground-plane pad melting at 400 C would prove it wrong.
+- Observed: RESULT: PASS small pad melts 0.62 s; ground plane steady 187.5 C never melts (400 C tip 212.5 C); preheat melts 0.82 s
+- Scenarios: 1) small pad 350 C tip; 2) ground plane 350 C tip; 3) ground plane 400 C tip (BREAK: hotter tip alone); 4) ground plane with 100 C board (BREAK: dwell as the only fix)
+- Link: session_01FKz3vbJ5KozVVes2fUyYJ8
+- Cited-by: 2026-10-17 · projects/pappydapimp69__brain-auto-training.md#E40 · compatible · sandboxes/2026-10-17__greedy-knob-stop-rule-dilution-steps-and-solder-dwell.py · observed RESULT: PASS greedy 1 pct stop rule is within 0.007 pct of the dilution optimum at every a tested (n differs at a=2.0, 5 vs 6, a plateau); in solder it stops at saturation (ground plane 185.0 C of steady 187.5 C, target 217 C unmet) · brain train auto loop 2 pass 2 (scheduled run 2026-10-17); session_01MUFH1b1Lc27PXz6rjHHodQ
+- Cited-by: 2026-10-18 · projects/local__variable-first-beats-knob-first-across-dilution-curing-and-soldering.md#E1 · compatible · sandboxes/2026-10-18__compute-the-hidden-variable-before-turning-the-bench-knob.py · observed RESULT: PASS (revised claim) knob-first fails 7/7 dilution, 3/4 curing, 1/4 solder cells; variable-first fails 0; both succeed in the benign curing and solder cells, dilution knob fails even at a=0. Two parts of the prediction were refuted. · brain train auto loop 1 pass 5; session_01Q7rYJzNw1uctb9nhZsXCQx
+- Cited-by: 2026-10-19 · projects/pappydapimp69__brainwork.md#E520 · compatible · sandboxes/2026-10-19__hidden-parameter-error-budget-is-tightest-for-solder-then-bolt-then-cure.py · observed RESULT: PASS error budgets solder 2.8% < bolt 6.2% < cure 28.0%; 400C solder 15.7% · brain train auto loop 2 pass 2, session_014pWETJKxgid7E3P5KtDPoT
+- Audited: 2026-10-19 · modeled · Read the entry and its stored sandbox and reran it (same RESULT line). The never-melts case is built in, not computed: t_melt returns None whenever the closed-form steady state is at or under 217 C, so the sandbox restates the rule instead of integrating the model to test it. What it covers is narrower than the Rule of thumb, since the claim is about real irons and boards but only a first-order lumped model with assumed conductances, heat capacity and liquidus was run, with no measured joint, no tip thermal-mass drop on contact and no flux or alloy range. The arithmetic is right (187.5, 212.5 and 225.0 C check by hand), so the lesson is a useful modeled regime and not a measured one. · brain train auto loop 1 pass 3 (scheduled run 2026-10-19); session_01TymEo8Je55Sk3ydLUdwHUE
+- Cited-by: 2026-10-20 · projects/pappydapimp69__brain.md#E218 · compatible · sandboxes/2026-10-20__closed-form-floor-predicts-the-knob-sweep-in-dilution-thermostat-and-solder.py · observed RESULT: PASS closed form matched the sweep: dilution 41/41, thermostat 18/18, solder 27/27; steady state alone missed 2 short-dwell cells, below-liquidus never melts 6/6; a* is 0.0147 uL. (The solder part of the prediction was wrong: stead… · brain train auto loop 2 pass 2 (second pick), session_01JDVQzjzkQ7iZuj2bmeR1bF

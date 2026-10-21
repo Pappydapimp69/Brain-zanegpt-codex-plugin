@@ -1,0 +1,34 @@
+{
+  "counts": {
+    "exploration": 22,
+    "ideas": 1244,
+    "memory": 2514,
+    "sandboxes": 1590,
+    "tension": 144
+  },
+  "notes": "Curated canon, its sandboxes, Brain's CLI and the memory steward. No credentials, private stores, raw conversations, incoming proposals, or Git history.",
+  "sha256": "41bb046e43f75f4b0e6ddd99804b8842fd659fbc349b4a5e9e121dbcc6cd266e",
+  "snapshot_version": "2026.10.21.2",
+  "sources": {
+    "brain": {
+      "commit": "af6681ca3e53676f1ccc2b409a99975403b8e4d2",
+      "url": "https://github.com/Pappydapimp69/Brain"
+    },
+    "ideas": {
+      "commit": "db07d8e94b3d6d75dd4f4771bbcb7d79e01ebd24",
+      "url": "https://github.com/Pappydapimp69/ideas"
+    },
+    "memory": {
+      "commit": "89d406ad4821a5c211cf35f5e00f10fbc6ae0a65",
+      "url": "https://github.com/Pappydapimp69/memory"
+    },
+    "tension": {
+      "commit": "9b22dddc7d44aaf677c06f3be58b1ddccbd1b362",
+      "url": "https://github.com/Pappydapimp69/Tension"
+    },
+    "zanegpt": {
+      "commit": "b2b2fed89602f6b28f95754a2d95e07644b0f6be",
+      "url": "https://github.com/Pappydapimp69/Zanegpt"
+    }
+  }
+}

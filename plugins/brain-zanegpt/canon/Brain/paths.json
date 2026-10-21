@@ -1,0 +1,8 @@
+{
+  "_comment": "The two halves and the bridge. A path is two systems (or a system and an idea kernel) that one lesson used together; each use adds 1 (a declared refutation subtracts fail_weight) and fades by decay_per_day per day of age, worked out from canon on every run, never stored. Two halves share one budget: kernel, edge and gap passes go to the new half for follow_share of the slots (strongest path plus a companion) and to the current half for the rest (weakest link); audit and rebuild stay with the current half. Every shared pass is labelled `- Picked-by: new-half|current-half`. The bridge: Conscience (read-only) carries two handoffs, worked out from canon: current-half lessons that held become the new half's first paths to build on, and lessons citing a disputed lesson (an audit failed it) go to the front of the current half's audit queue; an incompatible lesson refutes only its own composition, never what it cites. ZaneGPT pressure-tests every shared pick before it is built (hidden assumption, what would prove it wrong, one breaking scenario). `brain paths` reports the handoffs and who built on whom since trial_start; it passes no verdict - the owner decides.",
+  "enabled": true,
+  "decay_per_day": 0.85,
+  "follow_share": 0.5,
+  "fail_weight": 0.6,
+  "trial_start": "2026-10-15"
+}

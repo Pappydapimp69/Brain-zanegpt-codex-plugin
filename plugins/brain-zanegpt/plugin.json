@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "brain-zanegpt",
-  "version": "1.1.0",
-  "description": "ZaneGPT reasoning backed by an offline Brain knowledge snapshot and persistent local mining.",
+  "version": "2.0.0",
+  "description": "ZaneGPT reasoning backed by Brain's offline canon, with local lessons held to the same steward, reviews and training.",
   "author": {
     "name": "Pappydapimp69"
   },
@@ -19,10 +19,13 @@
       "interface": {
         "displayName": "Brain ZaneGPT",
         "shortDescription": "ZaneGPT reasoning with offline Brain memory",
-        "longDescription": "Use ZaneGPT's complete reasoning and voice instructions while querying a versioned, read-only Brain snapshot and mining durable local lessons. Local knowledge stays outside the plugin and survives upgrades.",
+        "longDescription": "Use ZaneGPT's complete reasoning and voice instructions with Brain's own CLI and steward running offline. Local lessons pass the same gate, reviews and training as shared canon, stay outside the plugin, and survive upgrades.",
         "developerName": "Pappydapimp69",
         "category": "Productivity",
-        "capabilities": ["Read", "Write"],
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
         "websiteURL": "https://github.com/Pappydapimp69/Brain",
         "defaultPrompt": [
           "Ask Brain what it knows about this problem, then answer as ZaneGPT.",

@@ -1,0 +1,23 @@
+# local/sandbox-identity-rhyme-verdict-must-depend-on-section-role — lessons
+
+Project: local/sandbox-identity-rhyme-verdict-must-depend-on-section-role. Newest first.
+
+---
+
+## E1 — sandbox identity rhyme verdict must depend on section role
+- Date: 2026-09-30
+- Project: local/sandbox-identity-rhyme-verdict-must-depend-on-section-role
+- Tags: [songwriting][rhyme][testing]
+- What: Deterministic lettering model showing that how a rhyme labeller treats repeated end words decides the verdict for a post-chorus and a verse in opposite directions. A post-chorus that repeats the title four times letters AAAA and passes a stable target if repetition counts as a resolved rhyme, and letters XXXX and fails if repetition is excluded. A verse with one accidental repeat (home, go, home, know) letters ABAB under the first rule and XAXA under the second.
+- Why built: lyrical-composition E9 says repetition is a separate category from rich rhyme, and the hooks kernel says a post-chorus deliberately repeats the title; this checks what E9's separation does to the declared-target check from the prompt-tooling kernel.
+- Design: sb/music/t7_postchorus_identity.py. Hand-keyed end-word sounds, a perfect-first lettering pass, and two treatments of identical end words (resolved or excluded). A section marked stable passes if at least one line is lettered. Four sections: title x4 post-chorus, title plus rich rhymes, a perfect-rhyme chorus, and a verse with one accidental repeat.
+- Got right: The perfect-rhyme chorus is AAAA and passes either way, so only repetition moves verdicts. With rich rhymes mixed in (tonight, knight, tonight, night) the section passes under both treatments.
+- Where/why it failed: Neither global rule is right: counting repetition as resolved turns the accidental verse repeat into a fake ABAB rhyme, and excluding it fails the deliberate hook. Separately, the exclusion run lettered the rich-rhyme post-chorus AAXA because my pass compares each line only with a group's first line, which is a scope artifact of the model.
+- Fix: Decide repetition by section role: in a post-chorus or hook, repeated title lines count as intentional and stable; in verses, report them as repetition, apart from rhymes, as E9 recommends.
+- Why this fix: The same surface pattern is a technique in one section and a placeholder in another, and the section tag already carries that role.
+- Rule of thumb: Treat a repeated end word by section role: count it as stable in a post-chorus (title x4 is AAAA, or XXXX and fails if excluded) and as repetition in a verse (home/home would fake ABAB).
+- Provenance (verified/assumed): Verified first-hand by running sb/music/t7_postchorus_identity.py; schemes and pass/fail are observed output. End-word sounds are hand-keyed, and the AAXA result is an artifact of my model's comparison scope.
+- Composed: sandbox-lyrical-composition/E9, ideas:SONGWRITING/hooks/five-named-techniques-for-a-memorable-melodic-hook, ideas:SONGWRITING/prompt-tooling/declared-emotional-target-cross-checks-the-craft-choices
+- Link: scheduled training session, music batch
+- Reverified: 2026-09-30 · pass · sandboxes/2026-09-30__rebuild-identity-rhyme-by-section-role.py · observed RESULT: PASS post-chorus title x4: counts=AAAA excluded=XXXX; verse door/go/door/know: counts=ABAB (fake ABAB) excluded=XAXA; by-role gives AAAA and XAXA; refrain verse by-role XXXX · Own fixture: hand-keyed rimes for 14 words, a post-chorus of tonight x4, verses door/go/door/know and rain/down/rain/town, a true ABAB verse, and a refrain-style verse as the break case; the original used a title x4 post-chorus, a rich-rhyme section, a perfect-rhyme chorus and a home/go/home/know verse (read only after the run). Treating repetition as a rhyme gives AAAA for the post-chorus and a fake ABAB for both repeat verses; excluding it gives XXXX and XAXA; a true ABAB verse is unaffected. The by-role rule gives the intended AAAA and XAXA. The break case shows a limit: a verse that repeats its end word on purpose as a refrain letters XXXX under the by-role rule, so role alone misreads refrain verses; the rule holds for accidental repeats as stated. · https://claude.ai/code/session_01PXuEX9SfJcr8Mxg6sK6stu
+- Cited-by: 2026-09-30 · projects/local__sandbox-role-rule-needs-word-identity-not-phoneme-identity.md#E1 · compatible · sandboxes/2026-09-30__role-rule-needs-word-identity-not-phoneme-identity.py · observed RESULT: PASS phoneme-identity role rule wrong on 3/5 sections (all rich-rhyme verses), word-identity wrong on 0/5; repetition verse and post-chorus correct under both · https://claude.ai/code/session_01PXuEX9SfJcr8Mxg6sK6stu

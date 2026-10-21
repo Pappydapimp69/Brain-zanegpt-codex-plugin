@@ -1,0 +1,26 @@
+# local/sandbox-quasiperiodic-near-recovery-at-fibonacci-lags — lessons
+
+Project: local/sandbox-quasiperiodic-near-recovery-at-fibonacci-lags. Newest first.
+
+---
+
+## E1 — sandbox quasiperiodic near recovery at fibonacci lags
+- Date: 2026-09-30
+- Project: local/sandbox-quasiperiodic-near-recovery-at-fibonacci-lags
+- Tags: [ui][input][state][gamedev][testing]
+- What: Deterministic sandbox re-checking the age-gate lag cost on three legality signals (period 15 width 5, Fibonacci word, irrational rotation) over N=600 uses, counting uses where a hint issued at t is still legal at t+lag.
+- Why built: To re-verify from a new angle the recorded claims that periodic state recovers fully at whole-cycle lag while aperiodic and quasiperiodic state never does.
+- Design: No RNG or timing; signal S[t] is legal/illegal; match(lag) counts t in 0..599 where S[t]==S[t+lag]. Compared periodic 15/5, Fibonacci word, and rotation by 1/e with window 0.3.
+- Got right: Periodic gives 360 matching uses at lag 3 (the recorded figure) and exactly 600 at lags 15, 30, 45; no aperiodic signal has any lag with 600.
+- Where/why it failed: Aperiodic signals do NOT stay far from full recovery: Fibonacci word reaches 592 at lag 55 and 594 at lag 89, rotation reaches 594 at lag 87, so a gate tuned to a bounded-cost assumption misjudges at those lags.
+- Fix: Treat recovery as a graded property: size the age gate by the best-match lag found from a scan, not by assuming aperiodic means permanent loss.
+- Why this fix: The scan over lags 1..119 is cheap and exposes the near-recovery lags (Fibonacci numbers for the Fibonacci word) that a periodic-versus-aperiodic split hides.
+- Rule of thumb: Exact recovery needs true periodicity, but quasiperiodic state nearly recovers (99 percent) at Fibonacci-number lags, so scan lags instead of assuming aperiodic means unrecoverable.
+- Provenance (verified/assumed): Verified first-hand by running the sandbox (sb/p2.py): periodic lag3=360, lag15=600; fibword lag55=592, lag89=594, no exact lag under 120; rotation best lag 87=594.
+- Composed: local__age-cutoff-roll-up/E1
+- Link: scheduled training session pass 2
+- Reverified: 2026-09-30 · fail · sandboxes/2026-09-30__rebuild-quasiperiodic-fibonacci-lag-recovery.py · observed RESULT: PASS periodic exact at P multiples; golden rotation min 0.990 at Fib lags>=89 (min 0.974 over 34-377), never 1.0; silver rotation min 0.200 at Fib lags -> near-recovery is tied to the golden ratio, not quasiperiodicity in general · Own fixture: N=1000, rotation signals with offset 0.13 and width 0.4, golden-ratio rotation, a silver-ratio (sqrt2-1) rotation as the break case, and a P13 W5 periodic signal; the original used N=600, P15 W5, the Fibonacci word and a 1/e rotation of width 0.3 (read only after the run). Periodic exactness reproduces (1.0 at 13/26/39) and golden rotation never reaches 1.0 but reaches at least 0.99 at Fibonacci lags of 89 and above (0.974 at 34, 0.984 at 55). The Rule of thumb says quasiperiodic state in general nearly recovers at Fibonacci-number lags; the silver rotation, equally quasiperiodic, scores 0.20 to 0.83 at those same lags and instead recovers at Pell lags (0.976/0.99/0.996 at 29/70/169). So the rule holds only for golden-ratio signals and only for larger Fibonacci lags; the advice to scan lags survives, the Fibonacci-lag claim does not generalise. · https://claude.ai/code/session_01PXuEX9SfJcr8Mxg6sK6stu
+- Cited-by: 2026-10-16 · projects/pappydapimp69__brainwork.md#E344 · compatible · sandboxes/2026-10-16__age-cutoff-quasiperiodic-lag-threshold.py · observed RESULT: PASS fib_loss55=594 rot_loss55=594 periodic_loss12=2400 thr(fib/rot/per)=89/89/60 · brain train auto pass 2; session_01RbNqhLnCALyxxvjiR2t3TU
+- Cited-by: 2026-10-18 · projects/local__fibonacci-lag-cutoff-makes-the-gate-only-invalid-count-small-not-worst.md#E1 · compatible · sandboxes/2026-10-18__fibonacci-lag-cutoff-makes-the-gate-only-invalid-count-small-not-worst.py · observed RESULT: PASS invalid 4 at lag 55 and 3 at lag 89 versus median 167 at lags 40 to 70; non-monotone; periodic formula exact on 11 lags; fib lags 1,2,3,5,8,13,21,34 gave 229,142,87,54,33,21,12,8. · brain train auto loop 2 pass 2; session_01Q7rYJzNw1uctb9nhZsXCQx
+- Cited-by: 2026-10-18 · projects/local__lossless-cutoff-worst-gate-only-holds-on-golden-rotation-with-continuous-formula.md#E1 · compatible · sandboxes/2026-10-18__lossless-cutoff-worst-gate-only-holds-on-golden-rotation-with-continuous-formula.py · observed RESULT: PASS lossless=144/144, monotone, formula error 0.0011 golden and 0.0010 silver, inv55=8 inv89=5; the silver case broke the expectation: lossless 143, cumulative 30191 at it versus 30492 at 144. · https://claude.ai/code/session_01MRoVc2AE75bu8wwdpoV7jJ
+- Cited-by: 2026-10-18 · projects/local__shuffled-block-fibonacci-word-loses-the-gate-dip-while-phase-shifts-keep-it.md#E1 · compatible · sandboxes/2026-10-18__shuffled-block-fibonacci-word-loses-the-gate-dip-while-phase-shifts-keep-it.py · observed RESULT: PASS Fibonacci phase shifts (11 starts) keep inv55<=5 inv89<=3 against median>=156; block-shuffled copies give 144 and 142 against 142 · https://claude.ai/code/session_01MRoVc2AE75bu8wwdpoV7jJ
